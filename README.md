@@ -1,7 +1,7 @@
 # Приклад Java-програми ведення розкладу коледжу з використанням СКБД MongoDB
 
 ## Кроки для виконання
-1. Завантажте і встановіть Java Development Kit 23 for Windows.
+1. Завантажте і встановіть Java Development Kit 17 (або новішу версію) для Windows.
 1. Завантажте Maven з https://dlcdn.apache.org/maven/maven-3/3.8.9/binaries/apache-maven-3.8.9-bin.zip і розпакуйте його на локальний комп'ютер.
 1. В Windows в параметрах системи додайте системну змінну MAVEN_HOME=<шлях до папки з Maven>
 1. В Windows в параметрах системи додайте `;<шлях до папки з Maven>\bin` в системну змінну PATH.
