@@ -55,6 +55,11 @@ public class CollegeApplication implements CommandLineRunner {
             System.out.println("3. Видалити розклад");
             System.out.println("4. Вихід");
             System.out.print("Введіть номер команди (1-4): ");
+            if (!scanner.hasNextInt()) {
+                String invalidInput = scanner.nextLine();
+                System.out.println("Некоректне введення \"" + invalidInput + "\". Введіть число від 1 до 4.");
+                continue;
+            }
             int choice = scanner.nextInt();
             scanner.nextLine();
 
