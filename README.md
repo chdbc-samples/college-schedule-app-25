@@ -8,6 +8,7 @@
 1. Встановіть СКБД MongoDB Community Server вибрати варіант установки Complete -> "Run service as Network Service user"
 1. Встановіть MongoDB Compass (GUI).
 1. Створіть базу даних `college-db` і колекцію в ній `college-schedule`.
+1. В Windows в параметрах системи додайте системну змінну `MONGO_URI` зі значенням `mongodb://localhost:27017/college-db` (це значення за замовчуванням для локальної MongoDB).
 1. Зберить програму використовуючи команду `mvn clean install`.
 1. Запустіть програму за допомогою команди `mvn exec:java`.
 
