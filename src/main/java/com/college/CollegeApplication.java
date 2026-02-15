@@ -74,6 +74,7 @@ public class CollegeApplication implements CommandLineRunner {
                     dropAllSchedules();
                     break;
                 case 4:
+                    scanner.close();
                     System.exit(0);
                     break;
                 default:
