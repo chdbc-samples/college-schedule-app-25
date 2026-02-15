@@ -108,6 +108,8 @@ public class CollegeApplication implements CommandLineRunner {
                 scheduleList.add(schedule);
             }
             
+            // Очистити існуючий розклад, щоб уникнути дублювання при повторному імпорті
+            scheduleRepository.deleteAll();
             scheduleRepository.saveAll(scheduleList);
             System.out.println(scheduleList.size() + " документів з рядками з розкладу завантажено з CSV.");
         } catch (Exception e) {
