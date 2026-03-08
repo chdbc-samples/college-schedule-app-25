@@ -15,6 +15,7 @@
   </properties>
   
   <dependencies>  
+    <!-- Unit test framework used by `mvn test` -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -42,6 +43,29 @@
 
   <build>
     <plugins>
+      <!-- Static analysis. Fails the build when style violations are found. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>3.3.1</version>
+        <configuration>
+          <configLocation>checkstyle.xml</configLocation>
+          <consoleOutput>true</consoleOutput>
+          <failsOnError>true</failsOnError>
+          <failOnViolation>true</failOnViolation>
+        </configuration>
+        <executions>
+          <execution>
+            <id>checkstyle-validate</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Allows running the CLI app from Maven: `mvn exec:java` -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
@@ -49,6 +73,28 @@
         <configuration>
           <mainClass>com.college.CollegeApplication</mainClass>
         </configuration>
+      </plugin>
+
+      <!-- Collects test coverage and writes JaCoCo reports under target/site/jacoco -->
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.8.12</version>
+        <executions>
+          <execution>
+            <id>prepare-agent</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>report</id>
+            <phase>test</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

@@ -84,8 +84,10 @@ public class CollegeApplication implements CommandLineRunner {
     }
 
     private void addScheduleFromCsv() {
-        try (CSVReader reader = new CSVReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("schedule.csv"),
-        StandardCharsets.UTF_8))) {
+        try (CSVReader reader = new CSVReader(new InputStreamReader(
+            getClass().getClassLoader().getResourceAsStream("schedule.csv"),
+            StandardCharsets.UTF_8)
+        )) {
             List<String[]> records = reader.readAll();
             
             records.remove(0); // Видалити перший рядок з назвами стовпців
