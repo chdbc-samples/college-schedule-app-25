@@ -150,14 +150,15 @@ java.lang.RuntimeException: repository unavailable
 [INFO] 
 [INFO] --- jacoco:0.8.12:check (check) @ college-schedule ---
 [INFO] Loading execution data file C:\GitHub\college-schedule-app-25\target\jacoco.exec
-SNAPSHOT\college-schedule-1.0-SNAPSHOT.pom
-[INFO] Installing C:\GitHub\college-schedule-app-25\target\college-schedule-1.0-SNAPSHOT.jar to C:\Users\dmitr\.m2\repository\com\college\college-schedule\1.0-SNAPSHOT\college-schedule-1.0-hedule ---SNAPSHOT.jar                                                   C:\Users\dmitr\.m2\repository\com\college\college-schedule\1.0-SNAPSH
-[INFO] ------------------------------------------------------------------------                                               ege-schedule-1.0-SNAPSHOT.jar to C:\Users\dmitr\.m2\repository\com\co
-[INFO] BUILD SUCCESS                                           OT.jar
-[INFO] ----------------------------------------------------------------------------------------
-[INFO] Total time:  25.849 s                                   ----------------
+[INFO] --- install:3.1.1:install (default-install) @ college-schedule ---
+[INFO] Installing C:\GitHub\college-schedule-app-25\pom.xml to C:\Users\dmitr\.m2\repository\com\college\college-schedule\1.0-SNAPSHOT\college-schedule-1.0-SNAPSHOT.pom
+[INFO] Installing C:\GitHub\college-schedule-app-25\target\college-schedule-1.0-SNAPSHOT.jar to C:\Users\dmitr\.m2\repository\com\college\college-schedule\1.0-SNAPSHOT\college-schedule-1.0-SNAPSHOT.jar
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  25.849 s
 [INFO] Finished at: 2026-03-09T01:23:17+02:00
-[INFO] ------------------------------------------------------------------------    
+[INFO] ------------------------------------------------------------------------
 ```
 
 ```
