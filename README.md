@@ -19,7 +19,6 @@ C:\GitHub\college-schedule-app-25>mvn clean install
 [INFO] Building college-sample 1.0-SNAPSHOT
 [INFO]   from pom.xml
 [INFO] --------------------------------[ jar ]---------------------------------
-[WARNING] Parameter 'encoding' is unknown for plugin 'maven-checkstyle-plugin:3.3.1:check (checkstyle-validate)'
 [INFO] 
 [INFO] --- clean:3.2.0:clean (default-clean) @ college-schedule ---
 [INFO] Deleting C:\GitHub\college-schedule-app-25\target
@@ -34,7 +33,7 @@ Audit done.
 [INFO]
 [INFO] --- resources:3.3.1:resources (default-resources) @ college-schedule ---
 [INFO] Copying 2 resources from src\main\resources to target\classes
-[INFO] 
+[INFO]
 [INFO] --- compiler:3.13.0:compile (default-compile) @ college-schedule ---
 [INFO] Recompiling the module because of changed source code.
 [INFO] Compiling 3 source files with javac [debug target 1.8] to target\classes
@@ -44,10 +43,10 @@ Audit done.
 [WARNING] source value 8 is obsolete and will be removed in a future release
 [WARNING] target value 8 is obsolete and will be removed in a future release
 [WARNING] To suppress warnings about obsolete options, use -Xlint:-options.
-[INFO] 
+[INFO]
 [INFO] --- resources:3.3.1:testResources (default-testResources) @ college-schedule ---
 [INFO] skip non existing resourceDirectory C:\GitHub\college-schedule-app-25\src\test\resources
-[INFO] 
+[INFO]
 [INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ college-schedule ---
 [INFO] Recompiling the module because of changed dependency.
 [INFO] Compiling 1 source file with javac [debug target 1.8] to target\test-classes
@@ -65,13 +64,13 @@ Audit done.
 [INFO]  T E S T S
 [INFO] -------------------------------------------------------
 [INFO] Running com.college.AppTest
-[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.119 s -- in com.college.AppTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.084 s -- in com.college.AppTest
 [INFO] 
 [INFO] Results:
 [INFO]
 [INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
 [INFO]
-[INFO]
+[INFO] 
 [INFO] --- jacoco:0.8.12:report (report) @ college-schedule ---
 [INFO] Loading execution data file C:\GitHub\college-schedule-app-25\target\jacoco.exec
 [INFO] Analyzed bundle 'college-sample' with 2 classes
@@ -85,8 +84,8 @@ Audit done.
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  17.763 s
-[INFO] Finished at: 2026-03-08T18:05:44+02:00
+[INFO] Total time:  14.035 s
+[INFO] Finished at: 2026-03-08T22:24:07+02:00
 [INFO] ------------------------------------------------------------------------
 ```
 
