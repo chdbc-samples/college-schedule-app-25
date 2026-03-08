@@ -221,8 +221,8 @@ Schedule { id="69ad9eca5a0d8c1ec8bdd57f"
 Файл workflow: `.github/workflows/build.yml`
 
 CI-pipeline запускається автоматично для:
-1. Pull request (`opened`, `synchronize`, `reopened`)
-2. Push у гілку `main`
+1. Pull request (`opened`, `synchronize`, `reopened`) у гілки `main` та `release/*`
+2. Push у гілки `main` та `release/*`
 
 Етапи pipeline:
 1. `static-analysis`:

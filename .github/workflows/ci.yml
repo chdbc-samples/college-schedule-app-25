@@ -1,12 +1,13 @@
 name: CI
 
 on:
-  # Run on PR lifecycle events and on direct pushes to main.
+  # Run on PR lifecycle events and on direct pushes to main, release/*.
   # This setup avoids unnecessary workflow runs on events like 
   # labeling or assigning reviewers, which don't change the code 
   # and don't require a rebuild.
   pull_request:
     types: [opened, synchronize, reopened]
+    branches: [main, release/*]
   push:
     branches: [main, release/*]
 
@@ -105,7 +106,8 @@ jobs:
             exit 0
           fi
 
-          read -r COVERED MISSED < <(awk -F, 'NR>1 {covered+=$8; missed+=$9} END {print covered+0, missed+0}' "$CSV_FILE")
+          # JaCoCo CSV columns: $8=LINE_MISSED, $9=LINE_COVERED
+          read -r COVERED MISSED < <(awk -F, 'NR>1 {covered+=$9; missed+=$8} END {print covered+0, missed+0}' "$CSV_FILE")
           TOTAL=$((COVERED + MISSED))
           if [ "$TOTAL" -eq 0 ]; then
             PERCENT="0.00"
