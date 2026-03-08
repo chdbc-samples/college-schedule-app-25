@@ -14,7 +14,7 @@
 ```
 C:\GitHub\college-schedule-app-25>mvn clean install
 [INFO] Scanning for projects...
-[INFO] 
+[INFO]
 [INFO] --------------------< com.college:college-schedule >--------------------
 [INFO] Building college-sample 1.0-SNAPSHOT
 [INFO]   from pom.xml
@@ -27,50 +27,120 @@ C:\GitHub\college-schedule-app-25>mvn clean install
 [INFO] Starting audit...
 Audit done.
 [INFO] You have 0 Checkstyle violations.
-[INFO]
+[INFO] 
 [INFO] --- jacoco:0.8.12:prepare-agent (prepare-agent) @ college-schedule ---
 [INFO] argLine set to -javaagent:C:\\Users\\dmitr\\.m2\\repository\\org\\jacoco\\org.jacoco.agent\\0.8.12\\org.jacoco.agent-0.8.12-runtime.jar=destfile=C:\\GitHub\\college-schedule-app-25\\target\\jacoco.exec
 [INFO]
 [INFO] --- resources:3.3.1:resources (default-resources) @ college-schedule ---
 [INFO] Copying 2 resources from src\main\resources to target\classes
-[INFO]
+[INFO] 
 [INFO] --- compiler:3.13.0:compile (default-compile) @ college-schedule ---
 [INFO] Recompiling the module because of changed source code.
-[INFO] Compiling 3 source files with javac [debug target 1.8] to target\classes
-[WARNING] bootstrap class path is not set in conjunction with -source 8
-  not setting the bootstrap class path may lead to class files that cannot run on JDK 8
-    --release 8 is recommended instead of -source 8 -target 1.8 because it sets the bootstrap class path automatically
-[WARNING] source value 8 is obsolete and will be removed in a future release
-[WARNING] target value 8 is obsolete and will be removed in a future release
-[WARNING] To suppress warnings about obsolete options, use -Xlint:-options.
+[INFO] Compiling 3 source files with javac [debug target 17] to target\classes
+[WARNING] location of system modules is not set in conjunction with -source 17
+  not setting the location of system modules may lead to class files that cannot run on JDK 17
+    --release 17 is recommended instead of -source 17 -target 17 because it sets the location of system modules automatically       
 [INFO]
 [INFO] --- resources:3.3.1:testResources (default-testResources) @ college-schedule ---
 [INFO] skip non existing resourceDirectory C:\GitHub\college-schedule-app-25\src\test\resources
 [INFO]
 [INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ college-schedule ---
 [INFO] Recompiling the module because of changed dependency.
-[INFO] Compiling 1 source file with javac [debug target 1.8] to target\test-classes
-[WARNING] bootstrap class path is not set in conjunction with -source 8
-  not setting the bootstrap class path may lead to class files that cannot run on JDK 8
-    --release 8 is recommended instead of -source 8 -target 1.8 because it sets the bootstrap class path automatically
-[WARNING] source value 8 is obsolete and will be removed in a future release
-[WARNING] target value 8 is obsolete and will be removed in a future release
-[WARNING] To suppress warnings about obsolete options, use -Xlint:-options.
+[INFO] Compiling 4 source files with javac [debug target 17] to target\test-classes
+[WARNING] location of system modules is not set in conjunction with -source 17
+  not setting the location of system modules may lead to class files that cannot run on JDK 17
+    --release 17 is recommended instead of -source 17 -target 17 because it sets the location of system modules automatically       
 [INFO]
-[INFO] --- surefire:3.2.5:test (default-test) @ college-schedule ---
-[INFO] Using auto detected provider org.apache.maven.surefire.junit.JUnit3Provider
+[INFO] --- surefire:3.5.1:test (default-test) @ college-schedule ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
 [INFO] 
 [INFO] -------------------------------------------------------
 [INFO]  T E S T S
 [INFO] -------------------------------------------------------
-[INFO] Running com.college.AppTest
-[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.084 s -- in com.college.AppTest
+[INFO] Running com.college.CollegeApplicationTest
+java.lang.RuntimeException: repository unavailable
+        at com.college.CollegeApplication.addScheduleFromCsv(CollegeApplication.java:115)
+        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+        at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+        at com.college.CollegeApplicationTest.invokePrivate(CollegeApplicationTest.java:145)
+        at com.college.CollegeApplicationTest.addScheduleFromCsvPrintsFailureMessageWhenRepositoryThrows(CollegeApplicationTest.java:52)
+        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+        at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+        at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:688)
+        at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
+        at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
+        at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:149)
+        at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:140)
+        at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:84)
+        at org.junit.jupiter.engine.execution.ExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(ExecutableInvoker.java:115)
+        at org.junit.jupiter.engine.execution.ExecutableInvoker.lambda$invoke$0(ExecutableInvoker.java:105)
+        at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106)
+        at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64)
+        at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45)
+        at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37)
+        at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:104)
+        at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:98)
+        at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$6(TestMethodTestDescriptor.java:210)        at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+        at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:206)
+        at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:131)
+        at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:65)
+        at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:139)
+        at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+        at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:129)
+        at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+        at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:127)
+        at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+        at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:126)
+        at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:84)
+        at java.base/java.util.ArrayList.forEach(ArrayList.java:1597)
+        at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:38)
+        at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:143)
+        at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+        at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:129)
+        at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+        at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:127)
+        at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+        at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:126)
+        at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:84)
+        at java.base/java.util.ArrayList.forEach(ArrayList.java:1597)
+        at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:38)
+        at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:143)
+        at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+        at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:129)
+        at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+        at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:127)
+        at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+        at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:126)
+        at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:84)
+        at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:32)
+        at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)        
+        at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:51)
+        at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:108)
+        at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:88)
+        at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:54)       
+        at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:67) 
+        at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:52)
+        at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:96)
+        at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:75)
+        at org.apache.maven.surefire.junitplatform.LazyLauncher.execute(LazyLauncher.java:56)
+        at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.execute(JUnitPlatformProvider.java:184)
+        at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:148)
+        at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:122)
+        at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:385)
+        at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
+        at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
+        at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.558 s -- in com.college.CollegeApplicationTest
+[INFO] Running com.college.ScheduleRepositoryTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.017 s -- in com.college.ScheduleRepositoryTest
+[INFO] Running com.college.ScheduleTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.034 s -- in com.college.ScheduleTest
 [INFO] 
 [INFO] Results:
 [INFO]
-[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0
 [INFO]
-[INFO] 
+[INFO]
 [INFO] --- jacoco:0.8.12:report (report) @ college-schedule ---
 [INFO] Loading execution data file C:\GitHub\college-schedule-app-25\target\jacoco.exec
 [INFO] Analyzed bundle 'college-sample' with 2 classes
@@ -78,15 +148,16 @@ Audit done.
 [INFO] --- jar:3.4.1:jar (default-jar) @ college-schedule ---
 [INFO] Building jar: C:\GitHub\college-schedule-app-25\target\college-schedule-1.0-SNAPSHOT.jar
 [INFO] 
-[INFO] --- install:3.1.2:install (default-install) @ college-schedule ---
-[INFO] Installing C:\GitHub\college-schedule-app-25\pom.xml to C:\Users\dmitr\.m2\repository\com\college\college-schedule\1.0-SNAPSHOT\college-schedule-1.0-SNAPSHOT.pom
-[INFO] Installing C:\GitHub\college-schedule-app-25\target\college-schedule-1.0-SNAPSHOT.jar to C:\Users\dmitr\.m2\repository\com\college\college-schedule\1.0-SNAPSHOT\college-schedule-1.0-SNAPSHOT.jar
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD SUCCESS
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time:  14.035 s
-[INFO] Finished at: 2026-03-08T22:24:07+02:00
-[INFO] ------------------------------------------------------------------------
+[INFO] --- jacoco:0.8.12:check (check) @ college-schedule ---
+[INFO] Loading execution data file C:\GitHub\college-schedule-app-25\target\jacoco.exec
+SNAPSHOT\college-schedule-1.0-SNAPSHOT.pom
+[INFO] Installing C:\GitHub\college-schedule-app-25\target\college-schedule-1.0-SNAPSHOT.jar to C:\Users\dmitr\.m2\repository\com\college\college-schedule\1.0-SNAPSHOT\college-schedule-1.0-hedule ---SNAPSHOT.jar                                                   C:\Users\dmitr\.m2\repository\com\college\college-schedule\1.0-SNAPSH
+[INFO] ------------------------------------------------------------------------                                               ege-schedule-1.0-SNAPSHOT.jar to C:\Users\dmitr\.m2\repository\com\co
+[INFO] BUILD SUCCESS                                           OT.jar
+[INFO] ----------------------------------------------------------------------------------------
+[INFO] Total time:  25.849 s                                   ----------------
+[INFO] Finished at: 2026-03-09T01:23:17+02:00
+[INFO] ------------------------------------------------------------------------    
 ```
 
 ```
@@ -236,3 +307,21 @@ CI-pipeline запускається автоматично для:
 2. Звіти тестів: `target/surefire-reports/**`
 3. Звіти покриття: `target/site/jacoco/**`, `target/jacoco.exec`
 4. Підсумок покриття виводиться в логах збірки та в GitHub Step Summary.
+
+## Тестування та покриття
+
+Поточний стан:
+1. Unit-тести написані на **JUnit 5**.
+2. Для покриття використовується **JaCoCo**.
+3. У `pom.xml` налаштовано мінімальне покриття **75% line coverage** (перевірка на етапі `verify`).
+
+Локальний запуск:
+1. Тільки unit-тести:
+`mvn test`
+2. Повна перевірка (включно з JaCoCo check):
+`mvn verify`
+
+Звіти:
+1. JUnit/Surefire: `target/surefire-reports/`
+2. JaCoCo HTML: `target/site/jacoco/index.html`
+3. JaCoCo CSV: `target/site/jacoco/jacoco.csv`
