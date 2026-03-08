@@ -22,7 +22,19 @@ public class Schedule {
     private String startTime;
     private String endTime;
 
-    public Schedule(String studentFirstName, String studentLastName, String teacherFirstName, String teacherLastName, String courseName, String departmentName, String roomNumber, String semester, String year, String startTime, String endTime) {
+    public Schedule(
+        String studentFirstName,
+        String studentLastName,
+        String teacherFirstName,
+        String teacherLastName,
+        String courseName,
+        String departmentName,
+        String roomNumber,
+        String semester,
+        String year,
+        String startTime,
+        String endTime
+    ) {
         this.studentFirstName = studentFirstName;
         this.studentLastName = studentLastName;
         this.teacherFirstName = teacherFirstName;
