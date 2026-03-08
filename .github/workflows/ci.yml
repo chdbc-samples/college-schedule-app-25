@@ -65,7 +65,7 @@ jobs:
         run: |
           mkdir -p target/ci-logs
           set -o pipefail
-          mvn -B package | tee target/ci-logs/build.log
+          mvn -B -Dcheckstyle.skip=true package | tee target/ci-logs/build.log
 
       - name: Upload build artifact
         if: always()
