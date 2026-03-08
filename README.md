@@ -218,7 +218,7 @@ Schedule { id="69ad9eca5a0d8c1ec8bdd57f"
 
 ## CI (GitHub Actions)
 
-Файл workflow: `.github/workflows/build.yml`
+Файл workflow: `.github/workflows/ci.yml`
 
 CI-pipeline запускається автоматично для:
 1. Pull request (`opened`, `synchronize`, `reopened`) у гілки `main` та `release/*`
