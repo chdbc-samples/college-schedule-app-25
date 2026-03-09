@@ -12,9 +12,9 @@
 
 ## Результати виконання програми
 ```
-C:\GitHub\college-schedule-app-25>mvn clean install
+C:\GitHub\college-schedule-app-25>mvn clean package
 [INFO] Scanning for projects...
-[INFO]
+[INFO] 
 [INFO] --------------------< com.college:college-schedule >--------------------
 [INFO] Building college-sample 1.0-SNAPSHOT
 [INFO]   from pom.xml
@@ -27,7 +27,7 @@ C:\GitHub\college-schedule-app-25>mvn clean install
 [INFO] Starting audit...
 Audit done.
 [INFO] You have 0 Checkstyle violations.
-[INFO] 
+[INFO]
 [INFO] --- jacoco:0.8.12:prepare-agent (prepare-agent) @ college-schedule ---
 [INFO] argLine set to -javaagent:C:\\Users\\dmitr\\.m2\\repository\\org\\jacoco\\org.jacoco.agent\\0.8.12\\org.jacoco.agent-0.8.12-runtime.jar=destfile=C:\\GitHub\\college-schedule-app-25\\target\\jacoco.exec
 [INFO]
@@ -130,17 +130,17 @@ java.lang.RuntimeException: repository unavailable
         at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
         at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
         at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
-[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.558 s -- in com.college.CollegeApplicationTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.113 s -- in com.college.CollegeApplicationTest
 [INFO] Running com.college.ScheduleRepositoryTest
-[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.017 s -- in com.college.ScheduleRepositoryTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.027 s -- in com.college.ScheduleRepositoryTest
 [INFO] Running com.college.ScheduleTest
-[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.034 s -- in com.college.ScheduleTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.014 s -- in com.college.ScheduleTest
 [INFO] 
 [INFO] Results:
 [INFO]
 [INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0
 [INFO]
-[INFO]
+[INFO] 
 [INFO] --- jacoco:0.8.12:report (report) @ college-schedule ---
 [INFO] Loading execution data file C:\GitHub\college-schedule-app-25\target\jacoco.exec
 [INFO] Analyzed bundle 'college-sample' with 2 classes
@@ -150,14 +150,13 @@ java.lang.RuntimeException: repository unavailable
 [INFO] 
 [INFO] --- jacoco:0.8.12:check (check) @ college-schedule ---
 [INFO] Loading execution data file C:\GitHub\college-schedule-app-25\target\jacoco.exec
-[INFO] --- install:3.1.1:install (default-install) @ college-schedule ---
-[INFO] Installing C:\GitHub\college-schedule-app-25\pom.xml to C:\Users\dmitr\.m2\repository\com\college\college-schedule\1.0-SNAPSHOT\college-schedule-1.0-SNAPSHOT.pom
-[INFO] Installing C:\GitHub\college-schedule-app-25\target\college-schedule-1.0-SNAPSHOT.jar to C:\Users\dmitr\.m2\repository\com\college\college-schedule\1.0-SNAPSHOT\college-schedule-1.0-SNAPSHOT.jar
+[INFO] Analyzed bundle 'college-schedule' with 2 classes
+[INFO] All coverage checks have been met.
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  25.849 s
-[INFO] Finished at: 2026-03-09T01:23:17+02:00
+[INFO] Total time:  19.856 s
+[INFO] Finished at: 2026-03-09T02:00:10+02:00
 [INFO] ------------------------------------------------------------------------
 ```
 
@@ -314,13 +313,13 @@ CI-pipeline запускається автоматично для:
 Поточний стан:
 1. Unit-тести написані на **JUnit 5**.
 2. Для покриття використовується **JaCoCo**.
-3. У `pom.xml` налаштовано мінімальне покриття **75% line coverage** (перевірка на етапі `verify`).
+3. У `pom.xml` налаштовано мінімальне покриття **75% line coverage** (перевірка на етапі `package`).
 
 Локальний запуск:
 1. Тільки unit-тести:
 `mvn test`
 2. Повна перевірка (включно з JaCoCo check):
-`mvn verify`
+`mvn package`
 
 Звіти:
 1. JUnit/Surefire: `target/surefire-reports/`
