@@ -10,6 +10,52 @@
 1. Зберіть програму використовуючи команду `mvn clean install`.
 1. Запустіть програму за допомогою команди `mvn exec:java`.
 
+## Налаштування `MONGO_URI`
+
+За замовчуванням програма використовує адресу `mongodb://localhost:27017/college-db` для підключення до локальної бази даних.
+
+
+### Підключення до MongoDB Atlas
+
+Для підключення MongoDB Atlas потрібно записати connection string кластера в змінну середовища `MONGO_URI` наприклад:
+
+```text
+mongodb+srv://<db-username>:<db-password>@<cluster-url>/college-db?retryWrites=true&w=majority
+```
+
+Порядок налаштування:
+1. Створіть кластер у MongoDB Atlas (тариф Free).
+1. Створіть користувача бази даних у розділі Database Access і збережіть пароль.
+1. Скопіюйте connection string з кнопки Connect -> Drivers і збережіть його.
+1. Створіть базу даних `college-db` і колекцію `college-schedule` в розділі Data Explorer.
+1. Підставте в URI свої `username`, `password` і назву бази даних `college-db` та збережіть у змінній середовища `MONGO_URI`.
+1. Визначте зовнішню IP-адресу (`curl -s https://api.ipify.org && echo`) і додайте її в Network Access.
+
+Приклад запуску з MongoDB Atlas.
+
+Windows Command Prompt:
+
+```cmd
+set MONGO_URI=mongodb+srv://db-username:db-password@cluster0.abcde.mongodb.net/college-db?retryWrites=true^&w=majority
+mvn exec:java
+```
+
+PowerShell:
+
+```powershell
+$env:MONGO_URI="mongodb+srv://db-username:db-password@cluster0.abcde.mongodb.net/college-db?retryWrites=true&w=majority"
+mvn exec:java
+```
+
+Linux/macOS:
+
+```bash
+export MONGO_URI="mongodb+srv://db-username:db-password@cluster0.abcde.mongodb.net/college-db?retryWrites=true&w=majority"
+mvn exec:java
+```
+
+Примітка: якщо пароль містить спеціальні символи, їх потрібно URL-кодувати в connection string. Наприклад, символ `@` потрібно замінити на `%40`.
+
 ## Результати виконання програми
 ```
 C:\GitHub\college-schedule-app-25>mvn clean package
@@ -165,7 +211,7 @@ C:\GitHub\college-schedule-app-25>chcp 65001
 ```
 
 ```
-C:\GitHub\college-schedule-app-25>mvn exec:java
+$ mvn exec:java
 [INFO] Scanning for projects...
 [INFO] 
 [INFO] --------------------< com.college:college-schedule >--------------------
@@ -183,107 +229,40 @@ C:\GitHub\college-schedule-app-25>mvn exec:java
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::                (v2.5.4)
 
-2026-03-08 18:07:31.502  INFO 13408 --- [lication.main()] com.college.CollegeApplication           : Starting CollegeApplication using Java 23 on DESKTOP-P20K4U1 with PID 13408 (C:\GitHub\college-schedule-app-25\target\classes started by dmitr in C:\GitHub\college-schedule-app-25)
-2026-03-08 18:07:31.505  INFO 13408 --- [lication.main()] com.college.CollegeApplication           : No active profile set, falling back to default profiles: default
-2026-03-08 18:07:32.207  INFO 13408 --- [lication.main()] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data MongoDB repositories in DEFAULT 
-mode.
-2026-03-08 18:07:32.344  INFO 13408 --- [lication.main()] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 130 ms. Found 
-1 MongoDB repository interfaces.
-2026-03-08 18:07:33.342  INFO 13408 --- [lication.main()] org.mongodb.driver.cluster               : Cluster created with settings {hosts=[localhost:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms'}
-2026-03-08 18:07:33.462  INFO 13408 --- [localhost:27017] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:1, serverValue:3}] to localhost:27017
-2026-03-08 18:07:33.462  INFO 13408 --- [localhost:27017] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:2, serverValue:4}] to localhost:27017
-2026-03-08 18:07:33.465  INFO 13408 --- [localhost:27017] org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, state=CONNECTED, ok=true, minWireVersion=0, maxWireVersion=25, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=34980100}
-2026-03-08 18:07:33.913  INFO 13408 --- [lication.main()] com.college.CollegeApplication           : Started CollegeApplication in 3.273 seconds (JVM running for 7.728)
+2026-03-15 13:23:01.753  INFO 23921 --- [lication.main()] com.college.CollegeApplication           : Starting CollegeApplication using Java 25.0.2 on codespaces-a54bda with PID 23921 (/workspaces/college-schedule-app-25/target/classes started by vscode in /workspaces/college-schedule-app-25)
+2026-03-15 13:23:01.755  INFO 23921 --- [lication.main()] com.college.CollegeApplication           : No active profile set, falling back to default profiles: default
+2026-03-15 13:23:02.079  INFO 23921 --- [lication.main()] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data MongoDB repositories in DEFAULT mode.
+2026-03-15 13:23:02.123  INFO 23921 --- [lication.main()] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 40 ms. Found 1 MongoDB repository interfaces.
+2026-03-15 13:23:02.437  INFO 23921 --- [lication.main()] org.mongodb.driver.cluster               : Cluster created with settings {hosts=[127.0.0.1:27017], srvHost=cluster0.lnmgkes.mongodb.net, mode=MULTIPLE, requiredClusterType=REPLICA_SET, serverSelectionTimeout='30000 ms', requiredReplicaSetName='atlas-thm4an-shard-0'}
+2026-03-15 13:23:02.495  INFO 23921 --- [kes.mongodb.net] org.mongodb.driver.cluster               : Adding discovered server ac-wwkixgl-shard-00-02.lnmgkes.mongodb.net:27017 to client view of cluster
+2026-03-15 13:23:02.536  INFO 23921 --- [kes.mongodb.net] org.mongodb.driver.cluster               : Adding discovered server ac-wwkixgl-shard-00-01.lnmgkes.mongodb.net:27017 to client view of cluster
+2026-03-15 13:23:02.538  INFO 23921 --- [kes.mongodb.net] org.mongodb.driver.cluster               : Adding discovered server ac-wwkixgl-shard-00-00.lnmgkes.mongodb.net:27017 to client view of cluster
+2026-03-15 13:23:02.895  INFO 23921 --- [lication.main()] com.college.CollegeApplication           : Started CollegeApplication in 1.664 seconds (JVM running for 4.478)
 1. Додати розклад з CSV-файлу
 2. Подивитись розклад
 3. Видалити розклад
 4. Вихід
-Введіть номер команди (1-4): 1
-2026-03-08 18:07:38.839  INFO 13408 --- [lication.main()] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:3, serverValue:5}] to localhost:27017
+Введіть номер команди (1-4): 2026-03-15 13:23:03.372  INFO 23921 --- [ngodb.net:27017] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:2, serverValue:162144}] to ac-wwkixgl-shard-00-01.lnmgkes.mongodb.net:27017
+2026-03-15 13:23:03.373  INFO 23921 --- [ngodb.net:27017] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:1, serverValue:166773}] to ac-wwkixgl-shard-00-00.lnmgkes.mongodb.net:27017
+2026-03-15 13:23:03.373  INFO 23921 --- [ngodb.net:27017] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:3, serverValue:172900}] to ac-wwkixgl-shard-00-02.lnmgkes.mongodb.net:27017
+2026-03-15 13:23:03.374  INFO 23921 --- [ngodb.net:27017] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:4, serverValue:162144}] to ac-wwkixgl-shard-00-01.lnmgkes.mongodb.net:27017
+2026-03-15 13:23:03.375  INFO 23921 --- [ngodb.net:27017] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:6, serverValue:166773}] to ac-wwkixgl-shard-00-00.lnmgkes.mongodb.net:27017
+2026-03-15 13:23:03.372  INFO 23921 --- [ngodb.net:27017] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:5, serverValue:172900}] to ac-wwkixgl-shard-00-02.lnmgkes.mongodb.net:27017
+2026-03-15 13:23:03.393  INFO 23921 --- [ngodb.net:27017] org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=ac-wwkixgl-shard-00-01.lnmgkes.mongodb.net:27017, type=REPLICA_SET_SECONDARY, state=CONNECTED, ok=true, minWireVersion=0, maxWireVersion=25, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=449721409, setName='atlas-thm4an-shard-0', canonicalAddress=ac-wwkixgl-shard-00-01.lnmgkes.mongodb.net:27017, hosts=[ac-wwkixgl-shard-00-00.lnmgkes.mongodb.net:27017, ac-wwkixgl-shard-00-01.lnmgkes.mongodb.net:27017, ac-wwkixgl-shard-00-02.lnmgkes.mongodb.net:27017], passives=[], arbiters=[], primary='ac-wwkixgl-shard-00-02.lnmgkes.mongodb.net:27017', tagSet=TagSet{[Tag{name='availabilityZone', value='eun1-az2'}, Tag{name='diskState', value='READY'}, Tag{name='nodeType', value='ELECTABLE'}, Tag{name='provider', value='AWS'}, Tag{name='region', value='EU_NORTH_1'}, Tag{name='workloadType', value='OPERATIONAL'}]}, electionId=null, setVersion=16, topologyVersion=TopologyVersion{processId=69b2dd3939cbe272cd48a228, counter=3}, lastWriteDate=Sun Mar 15 13:23:02 UTC 2026, lastUpdateTimeNanos=4153764175640}
+2026-03-15 13:23:03.393  INFO 23921 --- [ngodb.net:27017] org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=ac-wwkixgl-shard-00-02.lnmgkes.mongodb.net:27017, type=REPLICA_SET_PRIMARY, state=CONNECTED, ok=true, minWireVersion=0, maxWireVersion=25, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=445969756, setName='atlas-thm4an-shard-0', canonicalAddress=ac-wwkixgl-shard-00-02.lnmgkes.mongodb.net:27017, hosts=[ac-wwkixgl-shard-00-00.lnmgkes.mongodb.net:27017, ac-wwkixgl-shard-00-01.lnmgkes.mongodb.net:27017, ac-wwkixgl-shard-00-02.lnmgkes.mongodb.net:27017], passives=[], arbiters=[], primary='ac-wwkixgl-shard-00-02.lnmgkes.mongodb.net:27017', tagSet=TagSet{[Tag{name='availabilityZone', value='eun1-az3'}, Tag{name='diskState', value='READY'}, Tag{name='nodeType', value='ELECTABLE'}, Tag{name='provider', value='AWS'}, Tag{name='region', value='EU_NORTH_1'}, Tag{name='workloadType', value='OPERATIONAL'}]}, electionId=7fffffff00000000000000c1, setVersion=16, topologyVersion=TopologyVersion{processId=69b2db529d278ac4be012462, counter=6}, lastWriteDate=Sun Mar 15 13:23:02 UTC 2026, lastUpdateTimeNanos=4153760811353}
+2026-03-15 13:23:03.393  INFO 23921 --- [ngodb.net:27017] org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=ac-wwkixgl-shard-00-00.lnmgkes.mongodb.net:27017, type=REPLICA_SET_SECONDARY, state=CONNECTED, ok=true, minWireVersion=0, maxWireVersion=25, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=448986000, setName='atlas-thm4an-shard-0', canonicalAddress=ac-wwkixgl-shard-00-00.lnmgkes.mongodb.net:27017, hosts=[ac-wwkixgl-shard-00-00.lnmgkes.mongodb.net:27017, ac-wwkixgl-shard-00-01.lnmgkes.mongodb.net:27017, ac-wwkixgl-shard-00-02.lnmgkes.mongodb.net:27017], passives=[], arbiters=[], primary='ac-wwkixgl-shard-00-02.lnmgkes.mongodb.net:27017', tagSet=TagSet{[Tag{name='availabilityZone', value='eun1-az1'}, Tag{name='diskState', value='READY'}, Tag{name='nodeType', value='ELECTABLE'}, Tag{name='provider', value='AWS'}, Tag{name='region', value='EU_NORTH_1'}, Tag{name='workloadType', value='OPERATIONAL'}]}, electionId=null, setVersion=16, topologyVersion=TopologyVersion{processId=69b2d8870c6d3c42b8889b1f, counter=4}, lastWriteDate=Sun Mar 15 13:23:02 UTC 2026, lastUpdateTimeNanos=4153765342702}
+2026-03-15 13:23:03.396  INFO 23921 --- [ngodb.net:27017] org.mongodb.driver.cluster               : Setting max election id to 7fffffff00000000000000c1 from replica set primary ac-wwkixgl-shard-00-02.lnmgkes.mongodb.net:27017
+2026-03-15 13:23:03.396  INFO 23921 --- [ngodb.net:27017] org.mongodb.driver.cluster               : Setting max set version to 16 from replica set primary ac-wwkixgl-shard-00-02.lnmgkes.mongodb.net:27017
+2026-03-15 13:23:03.396  INFO 23921 --- [ngodb.net:27017] org.mongodb.driver.cluster               : Discovered replica set primary ac-wwkixgl-shard-00-02.lnmgkes.mongodb.net:27017
+1
+2026-03-15 13:23:08.553  INFO 23921 --- [lication.main()] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:7, serverValue:172835}] to ac-wwkixgl-shard-00-02.lnmgkes.mongodb.net:27017
 5 документів з рядками з розкладу завантажено з CSV.
 1. Додати розклад з CSV-файлу
 2. Подивитись розклад
 3. Видалити розклад
 4. Вихід
-Введіть номер команди (1-4): 2
-Знайдено 5 документів розкладу:
-Schedule { id="69ad9eca5a0d8c1ec8bdd57b"
- studentFirstName="Аліса"
- studentLastName="Мельник"
- teacherFirstName="Іван"
- teacherLastName="Петренко"
- courseName="Вступ до програмування"
- departmentName="Комп`ютерні науки"
- roomNumber="210"
- semester="Осінь"
- year="2024"
- startTime="09:00:00"
- endTime="10:30:00"
-}
-Schedule { id="69ad9eca5a0d8c1ec8bdd57c"
- studentFirstName="Катерина"
- studentLastName="Левченко"
- teacherFirstName="Іван"
- teacherLastName="Петренко"
- courseName="Вступ до програмування"
- departmentName="Комп`ютерні науки"
- roomNumber="210"
- semester="Осінь"
- year="2024"
- startTime="09:00:00"
- endTime="10:30:00"
-}
-Schedule { id="69ad9eca5a0d8c1ec8bdd57d"
- studentFirstName="Дмитро"
- studentLastName="Шевченко"
- teacherFirstName="Іван"
- teacherLastName="Петренко"
- courseName="Вступ до програмування"
- departmentName="Комп`ютерні науки"
- roomNumber="210"
- semester="Осінь"
- year="2024"
- startTime="09:00:00"
- endTime="10:30:00"
-}
-Schedule { id="69ad9eca5a0d8c1ec8bdd57e"
- studentFirstName="Богдан"
- studentLastName="Іванов"
- teacherFirstName="Оксана"
- teacherLastName="Коваль"
- courseName="Математичний аналіз I"
- departmentName="Математика"
- roomNumber="212"
- semester="Осінь"
- year="2024"
- startTime="11:00:00"
- endTime="12:30:00"
-}
-Schedule { id="69ad9eca5a0d8c1ec8bdd57f"
- studentFirstName="Олена"
- studentLastName="Петренко"
- teacherFirstName="Оксана"
- teacherLastName="Коваль"
- courseName="Математичний аналіз I"
- departmentName="Математика"
- roomNumber="212"
- semester="Осінь"
- year="2024"
- startTime="11:00:00"
- endTime="12:30:00"
-}
-1. Додати розклад з CSV-файлу
-2. Подивитись розклад
-3. Видалити розклад
-4. Вихід
-Введіть номер команди (1-4): 3
-Розклад видалено.
-1. Додати розклад з CSV-файлу
-2. Подивитись розклад
-3. Видалити розклад
-4. Вихід
 Введіть номер команди (1-4): 4
-2026-03-08 18:07:45.299  INFO 13408 --- [ionShutdownHook] org.mongodb.driver.connection            : Closed connection [connectionId{localValue:3, serverValue:5}] to localhost:27017 because the pool has been closed.
+2026-03-15 13:23:12.328  INFO 23921 --- [ionShutdownHook] org.mongodb.driver.connection            : Closed connection [connectionId{localValue:7, serverValue:172835}] to ac-wwkixgl-shard-00-02.lnmgkes.mongodb.net:27017 because the pool has been closed.
 ```
 
 ## CI (GitHub Actions)
