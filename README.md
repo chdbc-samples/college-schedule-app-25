@@ -62,7 +62,7 @@ C:\GitHub\college-schedule-app-25>mvn clean package
 [INFO] Scanning for projects...
 [INFO] 
 [INFO] --------------------< com.college:college-schedule >--------------------
-[INFO] Building college-sample 1.0-SNAPSHOT
+[INFO] Building college-sample 0.1.0-SNAPSHOT
 [INFO]   from pom.xml
 [INFO] --------------------------------[ jar ]---------------------------------
 [INFO] 
@@ -192,7 +192,7 @@ java.lang.RuntimeException: repository unavailable
 [INFO] Analyzed bundle 'college-sample' with 2 classes
 [INFO] 
 [INFO] --- jar:3.4.1:jar (default-jar) @ college-schedule ---
-[INFO] Building jar: C:\GitHub\college-schedule-app-25\target\college-schedule-1.0-SNAPSHOT.jar
+[INFO] Building jar: C:\GitHub\college-schedule-app-25\target\college-schedule-0.1.0-SNAPSHOT.jar
 [INFO] 
 [INFO] --- jacoco:0.8.12:check (check) @ college-schedule ---
 [INFO] Loading execution data file C:\GitHub\college-schedule-app-25\target\jacoco.exec
@@ -215,7 +215,7 @@ $ mvn exec:java
 [INFO] Scanning for projects...
 [INFO] 
 [INFO] --------------------< com.college:college-schedule >--------------------
-[INFO] Building college-sample 1.0-SNAPSHOT
+[INFO] Building college-sample 0.1.0-SNAPSHOT
 [INFO]   from pom.xml
 [INFO] --------------------------------[ jar ]---------------------------------
 [INFO] 
