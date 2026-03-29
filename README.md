@@ -230,22 +230,22 @@ C:\GitHub\college-schedule-app-25>chcp 65001
 ```
 $ mvn spring-boot:run
 [INFO] Scanning for projects...
-[INFO] 
+[INFO]
 [INFO] --------------------< com.college:college-schedule >--------------------
 [INFO] Building college-sample 0.2.0-SNAPSHOT
 [INFO]   from pom.xml
 [INFO] --------------------------------[ jar ]---------------------------------
-[INFO] 
+[INFO]
 [INFO] >>> spring-boot:2.5.4:run (default-cli) > test-compile @ college-schedule >>>
-[WARNING] 1 problem was encountered while building the effective model for org.javassist:javassist:jar:3.20 step for project (use -X to see details)
-[INFO] 
+[WARNING] 1 problem was encountered while building the effective model for org.javassist:javassist:jar:3.20.0-GA during dependency collection step for project (use -X to see details)
+[INFO]
 [INFO] --- checkstyle:3.3.1:check (checkstyle-validate) @ college-schedule ---
 [INFO] Starting audit...
 Audit done.
 [INFO] You have 0 Checkstyle violations.
-[INFO] 
+[INFO]
 [INFO] --- jacoco:0.8.12:prepare-agent (prepare-agent) @ college-schedule ---
-[INFO] argLine set to -javaagent:C:\\Users\\dmitr\\.m2\\repository\\org\\jacoco\\org.jacoco.agent\\0.8.12\\r=destfile=C:\\GitHub\\college-schedule-app-25\\target\\jacoco.exec
+[INFO] argLine set to -javaagent:C:\\Users\\dmitr\\.m2\\repository\\org\\jacoco\\org.jacoco.agent\\0.8.12\\org.jacoco.agent-0.8.12-runtime.jar=destfile=C:\\GitHub\\college-schedule-app-25\\target\\jacoco.exec
 [INFO]
 [INFO] --- resources:3.3.1:resources (default-resources) @ college-schedule ---
 [INFO] Copying 4 resources from src\main\resources to target\classes
@@ -255,7 +255,7 @@ Audit done.
 [INFO]
 [INFO] --- resources:3.3.1:testResources (default-testResources) @ college-schedule ---
 [INFO] skip non existing resourceDirectory C:\GitHub\college-schedule-app-25\src\test\resources
-[INFO] 
+[INFO]
 [INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ college-schedule ---
 [INFO] Nothing to compile - all classes are up to date.
 [INFO]
@@ -273,29 +273,24 @@ Audit done.
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::                (v2.5.4)
 
-2026-03-29 17:12:41.809  INFO 4332 --- [           main] com.college.CollegeApplication           : Startin on DESKTOP-P20K4U1 with PID 4332 (C:\GitHub\college-schedule-app-25\target\classes started by dmitr in C:\
-2026-03-29 17:12:41.815  INFO 4332 --- [           main] com.college.CollegeApplication           : No actifault profiles: default
-2026-03-29 17:12:42.980  INFO 4332 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrories in DEFAULT mode.
-2026-03-29 17:12:43.067  INFO 4332 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finishe
-in 80 ms. Found 1 MongoDB repository interfaces.
-2026-03-29 17:12:44.254  INFO 4332 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat tp)
-2026-03-29 17:12:44.279  INFO 4332 --- [           main] o.apache.catalina.core.StandardService   : Startin
-2026-03-29 17:12:44.280  INFO 4332 --- [           main] org.apache.catalina.core.StandardEngine  : Startin.0.52]
-2026-03-29 17:12:44.603  INFO 4332 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : InitialonContext
-2026-03-29 17:12:44.606  INFO 4332 --- [           main] w.s.c.ServletWebServerApplicationContext : Root Wen completed in 2639 ms
-2026-03-29 17:12:44.928  INFO 4332 --- [           main] org.mongodb.driver.cluster               : Clusteralhost:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms'}
-2026-03-29 17:12:45.066  INFO 4332 --- [localhost:27017] org.mongodb.driver.connection            : Opened e:1, serverValue:17}] to localhost:27017
-2026-03-29 17:12:45.066  INFO 4332 --- [localhost:27017] org.mongodb.driver.connection            : Opened e:2, serverValue:18}] to localhost:27017
-2026-03-29 17:12:45.069  INFO 4332 --- [localhost:27017] org.mongodb.driver.cluster               : Monitor
-server with description ServerDescription{address=localhost:27017, type=STANDALONE, state=CONNECTED, ok=trun=25, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=34349200}
-2026-03-29 17:12:46.211  INFO 4332 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat th context path ''
-2026-03-29 17:12:46.226  INFO 4332 --- [           main] com.college.CollegeApplication           : Startedds (JVM running for 8.083)
-2026-03-29 17:14:54.442  INFO 4332 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : InitialspatcherServlet'
-2026-03-29 17:14:54.443  INFO 4332 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initial
-2026-03-29 17:14:54.445  INFO 4332 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Complet
- localhost:27017
-
-2026-03-29 17:51:58.744  INFO 4332 --- [ionShutdownHook] org.mongodb.driver.connection            : Closed connection [connectionId{localValue:3, serverValue:19}] to localhost:27017 because the pool has been closed.
+2026-03-29 19:15:27.037  INFO 8480 --- [           main] com.college.CollegeApplication           : Starting CollegeApplication using Java 23 on DESKTOP-P20K4U1 with PID 8480 (C:\GitHub\college-schedule-app-25\
+target\classes started by dmitr in C:\GitHub\college-schedule-app-25)
+2026-03-29 19:15:27.043  INFO 8480 --- [           main] com.college.CollegeApplication           : No active profile set, falling back to default profiles: default
+2026-03-29 19:15:27.995  INFO 8480 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data MongoDB repositories in DEFAULT mode.
+2026-03-29 19:15:28.061  INFO 8480 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 60 ms. Found 1 MongoDB repository interfaces.
+2026-03-29 19:15:28.780  INFO 8480 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2026-03-29 19:15:28.797  INFO 8480 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-03-29 19:15:28.798  INFO 8480 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.52]
+2026-03-29 19:15:28.928  INFO 8480 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-03-29 19:15:28.929  INFO 8480 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1731 ms
+2026-03-29 19:15:29.170  INFO 8480 --- [           main] org.mongodb.driver.cluster               : Cluster created with settings {hosts=[localhost:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelect
+ionTimeout='30000 ms'}
+2026-03-29 19:15:29.281  INFO 8480 --- [localhost:27017] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:1, serverValue:26}] to localhost:27017
+2026-03-29 19:15:29.281  INFO 8480 --- [localhost:27017] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:2, serverValue:25}] to localhost:27017
+2026-03-29 19:15:29.283  INFO 8480 --- [localhost:27017] org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, ty
+pe=STANDALONE, state=CONNECTED, ok=true, minWireVersion=0, maxWireVersion=25, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=41473900}
+2026-03-29 19:15:30.340  INFO 8480 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2026-03-29 19:15:30.349  INFO 8480 --- [           main] com.college.CollegeApplication           : Started CollegeApplication in 3.943 seconds (JVM running for 4.599)
 ```
 
 ## CI (GitHub Actions)
