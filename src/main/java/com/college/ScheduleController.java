@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 /**
- * Веб-контролер для перегляду розкладу коледжу та додавання нових занять.
+ * Веб-контролер для перегляду розкладу коледжу, додавання нових занять та видалення записів.
  */
 @Controller
 public class ScheduleController {
