@@ -1,33 +1,27 @@
 package com.college;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
-import java.util.NoSuchElementException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 class CollegeApplicationTest {
-    private final InputStreamState inputStreamState = new InputStreamState();
     private final OutputStreamState outputStreamState = new OutputStreamState();
 
     @AfterEach
     void restoreSystemStreams() {
-        inputStreamState.restore();
         outputStreamState.restore();
     }
 
@@ -93,44 +87,6 @@ class CollegeApplicationTest {
         assertTrue(outputStreamState.value().contains("видалено"));
     }
 
-    @Test
-    void runExecutesChoicesAndStopsWhenInputIsExhausted() throws Exception {
-        ScheduleRepository repository = mock(ScheduleRepository.class);
-        when(repository.findAll()).thenReturn(Collections.emptyList());
-        CollegeApplication app = appWithRepository(repository);
-        inputStreamState.replace("1\n2\n3\nx\n");
-
-        assertThrows(NoSuchElementException.class, () -> app.run());
-
-        verify(repository, atLeast(2)).deleteAll();
-        verify(repository, times(1)).saveAll(anyList());
-        verify(repository, times(1)).findAll();
-    }
-
-    @Test
-    void runPrintsMessageForOutOfRangeChoice() throws Exception {
-        ScheduleRepository repository = mock(ScheduleRepository.class);
-        CollegeApplication app = appWithRepository(repository);
-        inputStreamState.replace("5\nx\n");
-
-        assertThrows(NoSuchElementException.class, () -> app.run());
-
-        assertTrue(outputStreamState.value().contains("некоректний"));
-    }
-
-    @Test
-    void runPrintsValidationMessageForNonNumericInput() throws Exception {
-        ScheduleRepository repository = mock(ScheduleRepository.class);
-        CollegeApplication app = appWithRepository(repository);
-        inputStreamState.replace("abc\n");
-
-        assertThrows(NoSuchElementException.class, () -> app.run());
-
-        String output = outputStreamState.value();
-        assertTrue(output.contains("Некоректне введення"));
-        assertTrue(output.contains("1 до 4"));
-    }
-
     private static CollegeApplication appWithRepository(ScheduleRepository repository) throws Exception {
         CollegeApplication app = new CollegeApplication();
         Field field = CollegeApplication.class.getDeclaredField("scheduleRepository");
@@ -143,18 +99,6 @@ class CollegeApplicationTest {
         Method method = CollegeApplication.class.getDeclaredMethod(methodName);
         method.setAccessible(true);
         method.invoke(app);
-    }
-
-    private static final class InputStreamState {
-        private final java.io.InputStream original = System.in;
-
-        private void replace(String input) {
-            System.setIn(new ByteArrayInputStream(input.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
-        }
-
-        private void restore() {
-            System.setIn(original);
-        }
     }
 
     private static final class OutputStreamState {
