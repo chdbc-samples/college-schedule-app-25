@@ -5,19 +5,15 @@
 #   і має необхідні права для публікації пакетів
 name: Maven Package
 
-# Запускається після успішного завершення CI workflow
+# Запускається як частина CI pipeline або вручну
 on:
-  workflow_run:
-    workflows: ["CI"]
-    types: [completed]
+  workflow_call:
 
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    # Запускати лише якщо CI workflow завершився успішно
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     # Надання необхідних дозволів для публікації пакетів
     permissions:
       contents: read
@@ -40,34 +36,20 @@ jobs:
       id: publish
       run: |
         BASE_VERSION_POM=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-        ARTIFACT_ID=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)
 
-        if [ "${{ github.event_name }}" == "pull_request" ]; then
-          PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
-          # Видалити -SNAPSHOT з базової версії для імені файлу
-          VERSION_NO_SNAPSHOT=$(echo ${BASE_VERSION_POM} | sed 's/-SNAPSHOT//g')
-          FINAL_NAME="${ARTIFACT_ID}-${VERSION_NO_SNAPSHOT}-pr-${PR_NUMBER}"
-          
-          echo "Збірка Pull Request. Базова версія POM: ${BASE_VERSION_POM}, PR: ${PR_NUMBER}"
-          echo "Встановлення finalName в pom.xml: ${FINAL_NAME}"
-          # Оновлення pom.xml для встановлення фінальної назви артефакту
-          mvn versions:set-property -Dproperty=project.build.finalName -DnewVersion=${FINAL_NAME} -DgenerateBackupPoms=false
-          
-          echo "Пакування з оновленим finalName..."
-          mvn -B package --file pom.xml
-
-          echo "Розгортання PR артефакту. Версія шляху репозиторію: ${BASE_VERSION_POM}, JAR: ${FINAL_NAME}.jar"
-          mvn --batch-mode deploy --file pom.xml -DskipTests
-          
-          echo "version_to_download=${BASE_VERSION_POM}" >> $GITHUB_OUTPUT
-          echo "docker_tag=${VERSION_NO_SNAPSHOT}-pr-${PR_NUMBER}" >> $GITHUB_OUTPUT
+        # GitHub Packages не підтримує повторний deploy SNAPSHOT версій (422).
+        # Замінюємо -SNAPSHOT на унікальний номер збірки.
+        if [[ "${BASE_VERSION_POM}" == *"-SNAPSHOT"* ]]; then
+          DEPLOY_VERSION="${BASE_VERSION_POM%-SNAPSHOT}-build.${GITHUB_RUN_NUMBER}"
+          echo "SNAPSHOT виявлено. Унікальна версія для deploy: ${DEPLOY_VERSION}"
+          mvn versions:set -DnewVersion="${DEPLOY_VERSION}" -DgenerateBackupPoms=false
         else
-          # Стандартне розгортання для не-PR збірок (напр., гілка main)
-          echo "Збірка гілки main або прямий push. Версія: ${BASE_VERSION_POM}"
-          mvn --batch-mode deploy --file pom.xml -DskipTests
-
-          echo "version_to_download=${BASE_VERSION_POM}" >> $GITHUB_OUTPUT
-          echo "docker_tag=${BASE_VERSION_POM}" >> $GITHUB_OUTPUT
+          DEPLOY_VERSION="${BASE_VERSION_POM}"
         fi
+
+        echo "Публікація версії: ${DEPLOY_VERSION}"
+        mvn --batch-mode deploy --file pom.xml -DskipTests
+
+        echo "version_to_download=${DEPLOY_VERSION}" >> $GITHUB_OUTPUT
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
