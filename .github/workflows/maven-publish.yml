@@ -5,20 +5,19 @@
 #   і має необхідні права для публікації пакетів
 name: Maven Package
 
-# Запускається при пушах в гілку main або при створенні pull request
+# Запускається після успішного завершення CI workflow
 on:
-  push:
-    branches:
-      - main
-
-  pull_request:
-    branches: ['*']
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
 
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Запускати лише якщо CI workflow завершився успішно
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     # Надання необхідних дозволів для публікації пакетів
     permissions:
       contents: read
