@@ -34,30 +34,8 @@ jobs:
         server-username: GITHUB_ACTOR
         server-password: GITHUB_TOKEN
 
-    # Крок 3: Діагностика GitHub Packages
-    - name: Діагностика GitHub Packages
-      run: |
-        echo "=== Перевірка settings.xml ==="
-        cat ~/.m2/settings.xml 2>/dev/null || echo "settings.xml не знайдено"
-
-        echo ""
-        echo "=== Перевірка доступу до GitHub Packages ==="
-        curl -s -o /dev/null -w "HTTP Status: %{http_code}\n" \
-          -H "Authorization: token ${GITHUB_TOKEN}" \
-          "https://maven.pkg.github.com/chdbc-samples/college-schedule-app-25/com/college/college-schedule/maven-metadata.xml"
-
-        echo ""
-        echo "=== Тест завантаження POM ==="
-        curl -s -w "\nHTTP Status: %{http_code}\n" \
-          -H "Authorization: token ${GITHUB_TOKEN}" \
-          -X PUT \
-          --data '<project/>' \
-          "https://maven.pkg.github.com/chdbc-samples/college-schedule-app-25/com/college/college-schedule/0.2.0-SNAPSHOT/test-diag.pom"
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    # Крок 4: Публікація артефактів в GitHub Packages
-    - name: Публікація в GitHub Packages
-      run: mvn --batch-mode -e deploy --file pom.xml -DskipTests
+    # Крок 3: Публікація артефактів в GitHub Packages
+    - name: Publish to GitHub Packages
+      run: mvn --batch-mode deploy --file pom.xml -DskipTests
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
