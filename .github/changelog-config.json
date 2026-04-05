@@ -21,9 +21,8 @@
             "labels": ["Task"]
         }
     ],
-    "mode": "ISSUES",
     "template": "${{CHANGELOG}}\n\n## 🔗 Корисні посилання\n- [Інструкція з інсталяції](README.md)\n- [GitHub Releases](https://github.com/${{OWNER}}/${{REPOSITORY}}/releases)",
-    "issue_template": "- ${{TITLE}} (#${{NUMBER}})",
+    "pr_template": "- ${{TITLE}} (#${{NUMBER}})",
     "empty_template": "- Немає змін в цій категорії",
     "sort": "ASC",
     "base_branches": ["main"]
