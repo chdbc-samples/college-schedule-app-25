@@ -30,26 +30,12 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
+        server-id: github
+        server-username: GITHUB_ACTOR
+        server-password: GITHUB_TOKEN
 
     # Крок 3: Публікація артефактів в GitHub Packages
-    - name: Publish to GitHub Packages
-      id: publish
-      run: |
-        BASE_VERSION_POM=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-
-        # GitHub Packages не підтримує повторний deploy SNAPSHOT версій (422).
-        # Замінюємо -SNAPSHOT на унікальний номер збірки.
-        if [[ "${BASE_VERSION_POM}" == *"-SNAPSHOT"* ]]; then
-          DEPLOY_VERSION="${BASE_VERSION_POM%-SNAPSHOT}-build.${GITHUB_RUN_NUMBER}"
-          echo "SNAPSHOT виявлено. Унікальна версія для deploy: ${DEPLOY_VERSION}"
-          mvn versions:set -DnewVersion="${DEPLOY_VERSION}" -DgenerateBackupPoms=false
-        else
-          DEPLOY_VERSION="${BASE_VERSION_POM}"
-        fi
-
-        echo "Публікація версії: ${DEPLOY_VERSION}"
-        mvn --batch-mode deploy --file pom.xml -DskipTests
-
-        echo "version_to_download=${DEPLOY_VERSION}" >> $GITHUB_OUTPUT
+    - name: Публікація в GitHub Packages
+      run: mvn --batch-mode -e -X deploy --file pom.xml -DskipTests
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
