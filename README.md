@@ -65,6 +65,18 @@ mvn spring-boot:run
 
 Примітка: якщо пароль містить спеціальні символи, їх потрібно URL-кодувати в connection string. Наприклад, символ `@` потрібно замінити на `%40`.
 
+## Запуск тестів
+
+Локальні команди Maven:
+1. Лише unit-тести:
+`mvn test`
+2. Лише integration-тести:
+`mvn -DskipUnitTests=true verify`
+3. Повна перевірка перед merge або release:
+`mvn verify`
+
+Примітка: integration-тести використовують **Testcontainers MongoDB**. Для локального запуску `mvn verify` має бути запущений Docker Desktop.
+
 ## Результати виконання програми
 ```
 C:\GitHub\college-schedule-app-25>mvn clean install
@@ -114,20 +126,6 @@ Audit done.
 [INFO]  T E S T S
 [INFO] -------------------------------------------------------
 [INFO] Running com.college.CollegeApplicationTest
-java.lang.RuntimeException: repository unavailable
-        at com.college.CollegeApplication.addScheduleFromCsv(CollegeApplication.java:71)
-        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
-        at java.base/java.lang.reflect.Method.invoke(Method.java:580)
-        at com.college.CollegeApplicationTest.invokePrivate(CollegeApplicationTest.java:101)
-        at com.college.CollegeApplicationTest.addScheduleFromCsvPrintsFailureMessageWhenRepositoryThrows(CollegeApplicationTest.java:46)
-        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
-        at java.base/java.lang.reflect.Method.invoke(Method.java:580)
-        at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:688)
-        at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
-        at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
-        at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:149)
-        at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:140)
-        at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:84)
         at org.junit.jupiter.engine.execution.ExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(ExecutableInvoker.java:115)
         at org.junit.jupiter.engine.execution.ExecutableInvoker.lambda$invoke$0(ExecutableInvoker.java:105)
         at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106)
@@ -305,30 +303,44 @@ CI-pipeline запускається автоматично для:
 1. `static-analysis`:
 - Запускає Checkstyle (`mvn -B -DskipTests checkstyle:check`)
 - Завершує CI з помилкою, якщо правила порушено
-2. `build`:
-- Запускає `mvn -B package` (включно з unit-тестами)
-- Завершується з помилкою, якщо збірка або тести не пройшли
+2. `unit-tests`:
+- Запускає `mvn -B -DskipIntegrationTests=true test`
+- Публікує `Surefire`-звіти та unit coverage
+3. `integration-tests`:
+- Запускає `mvn -B -DskipUnitTests=true verify`
+- Піднімає ізольований MongoDB через Testcontainers
+- Публікує `Failsafe`-звіти та integration coverage
+4. `build`:
+- Запускає `mvn -B -DskipUnitTests=true -DskipIntegrationTests=true package`
+- Створює JAR після успішного проходження unit та integration тестів
 
 Артефакти та звіти:
 1. Артефакт збірки: `target/*.jar`
 2. Звіти тестів: `target/surefire-reports/**`
-3. Звіти покриття: `target/site/jacoco/**`, `target/jacoco.exec`
-4. Підсумок покриття виводиться в логах збірки та в GitHub Step Summary.
+3. Звіти integration-тестів: `target/failsafe-reports/**`
+4. Звіти unit coverage: `target/site/jacoco/**`, `target/jacoco.exec`
+5. Звіти integration coverage: `target/site/jacoco-integration-tests/**`, `target/jacoco-integration-tests.exec`
+6. При падінні integration-тестів workflow завантажує логи та звіти як artifacts.
 
 ## Тестування та покриття
 
 Поточний стан:
 1. Unit-тести написані на **JUnit 5**.
-2. Для покриття використовується **JaCoCo**.
-3. У `pom.xml` налаштовано мінімальне покриття **75% line coverage** (перевірка на етапі `package`).
+2. Integration-тести запускаються через **Failsafe** і використовують **Testcontainers MongoDB**.
+3. Для покриття використовується **JaCoCo**.
+4. У `pom.xml` налаштовано мінімальне покриття **75% line coverage** (перевірка на етапі `package`).
 
 Локальний запуск:
 1. Тільки unit-тести:
 `mvn test`
-2. Повна перевірка (включно з JaCoCo check):
-`mvn package`
+2. Тільки integration-тести:
+`mvn -DskipUnitTests=true verify`
+3. Повна перевірка (unit + integration + JaCoCo):
+`mvn verify`
 
 Звіти:
 1. JUnit/Surefire: `target/surefire-reports/`
-2. JaCoCo HTML: `target/site/jacoco/index.html`
-3. JaCoCo CSV: `target/site/jacoco/jacoco.csv`
+2. JUnit/Failsafe: `target/failsafe-reports/`
+3. Unit JaCoCo HTML: `target/site/jacoco/index.html`
+4. Integration JaCoCo HTML: `target/site/jacoco-integration-tests/index.html`
+5. Unit JaCoCo CSV: `target/site/jacoco/jacoco.csv`

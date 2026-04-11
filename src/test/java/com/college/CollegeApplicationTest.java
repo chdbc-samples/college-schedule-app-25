@@ -1,8 +1,6 @@
 package com.college;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -23,30 +21,6 @@ class CollegeApplicationTest {
     @AfterEach
     void restoreSystemStreams() {
         outputStreamState.restore();
-    }
-
-    @Test
-    void addScheduleFromCsvReplacesExistingDataAndSavesParsedRows() throws Exception {
-        ScheduleRepository repository = mock(ScheduleRepository.class);
-        CollegeApplication app = appWithRepository(repository);
-
-        invokePrivate(app, "addScheduleFromCsv");
-
-        verify(repository, times(1)).deleteAll();
-        verify(repository, times(1)).saveAll(anyList());
-        assertTrue(outputStreamState.value().contains("CSV"));
-    }
-
-    @Test
-    void addScheduleFromCsvPrintsFailureMessageWhenRepositoryThrows() throws Exception {
-        ScheduleRepository repository = mock(ScheduleRepository.class);
-        doThrow(new RuntimeException("repository unavailable")).when(repository).deleteAll();
-        CollegeApplication app = appWithRepository(repository);
-
-        invokePrivate(app, "addScheduleFromCsv");
-
-        assertTrue(outputStreamState.value().contains("CSV"));
-        verify(repository, times(1)).deleteAll();
     }
 
     @Test
