@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: college-schedule-app
+    runtime: docker
+    plan: free
+    dockerfilePath: ./deploy/Dockerfile
+    dockerContext: .
+    envVars:
+      - key: MONGO_URI
+        sync: false

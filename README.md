@@ -65,6 +65,30 @@ mvn spring-boot:run
 
 Примітка: якщо пароль містить спеціальні символи, їх потрібно URL-кодувати в connection string. Наприклад, символ `@` потрібно замінити на `%40`.
 
+## Docker
+
+Збірка Docker image виконується з кореня репозиторію, використовуючи файл [deploy/Dockerfile](deploy/Dockerfile).
+
+Команда збірки:
+
+```bash
+docker build -f deploy/Dockerfile -t college-schedule-app .
+```
+
+Приклад локального запуску контейнера з `MONGO_URI`:
+
+```bash
+docker run -p 8081:8081 -e MONGO_URI="mongodb://host.docker.internal:27017/college-db" college-schedule-app
+```
+
+Приклад запуску з MongoDB Atlas:
+
+```bash
+docker run -p 8081:8081 -e MONGO_URI="mongodb+srv://db-username:db-password@cluster0.abcde.mongodb.net/college-db?retryWrites=true&w=majority" college-schedule-app
+```
+
+Примітка: не запускайте `docker build` з папки `deploy`, інакше Docker не побачить каталог `src` у build context.
+
 ## Запуск тестів
 
 Локальні команди Maven:
