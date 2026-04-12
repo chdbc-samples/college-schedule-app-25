@@ -8,6 +8,7 @@ on:
     branches: [main, release/*]
 
 jobs:
+  # Етап 1: виконати перевірки статичного аналізу перед тестуванням або пакуванням.
   static-analysis:
     name: Static Analysis
     runs-on: ubuntu-latest
@@ -38,6 +39,7 @@ jobs:
           path: target/ci-logs/**
           if-no-files-found: warn
 
+  # Етап 2: виконати юніт-тести, лише якщо статичний аналіз пройшов успішно.
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
@@ -116,6 +118,7 @@ jobs:
           path: target/ci-logs/**
           if-no-files-found: warn
 
+  # Етап 3: виконати інтеграційні тести, лише якщо юніт-тести пройшли успішно.
   integration-tests:
     name: Integration Tests
     runs-on: ubuntu-latest
@@ -157,6 +160,56 @@ jobs:
             target/jacoco-integration-tests.exec
           if-no-files-found: warn
 
+      - name: Print integration coverage summary
+        if: always()
+        shell: bash
+        run: |
+          CSV_FILE="target/site/jacoco-integration-tests/jacoco.csv"
+          if [ ! -f "$CSV_FILE" ]; then
+            echo "Integration coverage report was not generated."
+            echo "## Integration Test Coverage" >> "$GITHUB_STEP_SUMMARY"
+            echo "Coverage report was not generated." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          print_class_coverage() {
+            local full_class_name="$1"
+            local package_path class_name covered missed total percent
+
+            package_path="${full_class_name%.*}"
+            class_name="${full_class_name##*.}"
+            package_path="${package_path//./\/}"
+
+            read -r covered missed < <(awk -F, -v target_package="$package_path" -v target_class="$class_name" '
+              NR>1 && $2 == target_package && $3 == target_class {
+                covered += $9
+                missed += $8
+              }
+              END {print covered+0, missed+0}
+            ' "$CSV_FILE")
+
+            total=$((covered + missed))
+            if [ "$total" -eq 0 ]; then
+              percent="0.00"
+            else
+              percent=$(awk -v c="$covered" -v t="$total" 'BEGIN {printf "%.2f", (c/t)*100}')
+            fi
+
+            echo "${full_class_name} integration coverage: ${percent}% (covered: ${covered}, missed: ${missed})"
+
+            {
+              echo "### ${full_class_name}"
+              echo "Line coverage: ${percent}%"
+              echo "Covered lines: ${covered}"
+              echo "Missed lines: ${missed}"
+              echo
+            } >> "$GITHUB_STEP_SUMMARY"
+          }
+
+          echo "## Integration Test Coverage" >> "$GITHUB_STEP_SUMMARY"
+          print_class_coverage "com.college.Schedule"
+          print_class_coverage "com.college.ScheduleController"
+
       - name: Upload integration logs on failure
         if: failure()
         uses: actions/upload-artifact@v4
@@ -168,6 +221,7 @@ jobs:
             target/site/jacoco-integration-tests/**
           if-no-files-found: warn
 
+  # Етап 4: зібрати та запакувати артефакт, лише якщо статичний аналіз і тести пройшли успішно.
   build:
     name: Build Package
     runs-on: ubuntu-latest
@@ -195,6 +249,7 @@ jobs:
           path: target/*.jar
           if-no-files-found: warn
 
+  # Етап 5: опублікувати пакет лише після успішного завершення етапу збірки.
   publish:
     name: Publish Package
     needs: build
