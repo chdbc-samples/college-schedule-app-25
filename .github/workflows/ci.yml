@@ -178,7 +178,6 @@ jobs:
 
             package_path="${full_class_name%.*}"
             class_name="${full_class_name##*.}"
-            package_path="${package_path//./\/}"
 
             read -r covered missed < <(awk -F, -v target_package="$package_path" -v target_class="$class_name" '
               NR>1 && $2 == target_package && $3 == target_class {
