@@ -222,7 +222,7 @@ jobs:
 
   # Етап 4: зібрати та запакувати артефакт, лише якщо статичний аналіз і тести пройшли успішно.
   build:
-    name: Build Package
+    name: Build
     runs-on: ubuntu-latest
     needs: integration-tests
 
