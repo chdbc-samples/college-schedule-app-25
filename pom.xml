@@ -9,15 +9,18 @@
   <url>http://maven.apache.org</url>
 
   <properties>
-    <!-- Build / resources encoding -->
+    <!-- Кодування збірки та ресурсів -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
     <project.scm.id>github</project.scm.id>
+    <testcontainers.version>1.20.6</testcontainers.version>
+    <skipUnitTests>false</skipUnitTests>
+    <skipIntegrationTests>false</skipIntegrationTests>
   </properties>
 
-  <!-- SCM Information -->
+  <!-- Інформація про SCM -->
   <scm>
     <connection>scm:git:https://github.com/chdbc-samples/college-schedule-app-25.git</connection>
     <developerConnection>scm:git:https://github.com/chdbc-samples/college-schedule-app-25.git</developerConnection>
@@ -26,7 +29,7 @@
   </scm>
   
   <dependencies>  
-    <!-- Test framework: JUnit 5, Mockito, Spring Test, AssertJ, etc. -->
+    <!-- Тестовий стек: JUnit 5, Mockito, Spring Test, AssertJ, Testcontainers тощо. -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
@@ -49,9 +52,16 @@
         <version>2.5.4</version>
     </dependency>
     <dependency>
-        <groupId>com.opencsv</groupId>
-        <artifactId>opencsv</artifactId>
-        <version>5.5.2</version>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>junit-jupiter</artifactId>
+        <version>${testcontainers.version}</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>mongodb</artifactId>
+        <version>${testcontainers.version}</version>
+        <scope>test</scope>
     </dependency>
 
   </dependencies>
@@ -66,7 +76,7 @@
 
   <build>
     <plugins>
-      <!-- Static analysis. Fails the build when style violations are found. -->
+      <!-- Статичний аналіз. Збірка завершується з помилкою, якщо знайдено порушення Code Style. -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
@@ -88,14 +98,14 @@
         </executions>
       </plugin>
 
-      <!-- Runs the Spring Boot app with embedded web server: `mvn spring-boot:run` -->
+      <!-- Запускає Spring Boot застосунок із вбудованим вебсервером: `mvn spring-boot:run` -->
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <version>2.5.4</version>
       </plugin>
 
-      <!-- Allows running the CLI app from Maven: `mvn exec:java` -->
+      <!-- Дозволяє запускати CLI-застосунок через Maven: `mvn exec:java` -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
@@ -105,34 +115,100 @@
         </configuration>
       </plugin>
 
+      <!-- Запускає юніт-тести, які за домовленістю мають назву *Test.java. -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.5.1</version>
         <configuration>
           <useModulePath>false</useModulePath>
+          <skipTests>${skipUnitTests}</skipTests>
+          <excludes>
+            <exclude>**/*IntegrationTests.java</exclude>
+          </excludes>
         </configuration>
       </plugin>
 
-      <!-- Collects test coverage and writes JaCoCo reports under target/site/jacoco -->
+      <!-- Запускає інтеграційні тести, які за домовленістю мають назву *IntegrationTests.java. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>3.5.1</version>
+        <configuration>
+          <useModulePath>false</useModulePath>
+          <skipITs>${skipIntegrationTests}</skipITs>
+          <includes>
+            <include>**/*IntegrationTests.java</include>
+          </includes>
+          <argLine>@{integrationTestsArgLine}</argLine>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Розраховує покриття коду тестами і записує звіти JaCoCo в target/site/jacoco -->
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
         <version>0.8.12</version>
         <executions>
+          <!-- Підготовка агента JaCoCo для юніт-тестів. -->
           <execution>
             <id>prepare-agent</id>
             <goals>
               <goal>prepare-agent</goal>
             </goals>
+            <configuration>
+              <skip>${skipUnitTests}</skip>
+            </configuration>
           </execution>
+
+          <!-- Генерує звіт про покриття коду юніт-тестами. -->
           <execution>
             <id>report</id>
             <phase>test</phase>
             <goals>
               <goal>report</goal>
             </goals>
+            <configuration>
+              <skip>${skipUnitTests}</skip>
+            </configuration>
           </execution>
+
+          <!-- Підготовка агента JaCoCo для інтеграційних тестів. -->    
+          <execution>
+            <id>prepare-agent-integration</id>
+            <goals>
+              <goal>prepare-agent-integration</goal>
+            </goals>
+            <configuration>
+              <skip>${skipIntegrationTests}</skip>
+              <destFile>${project.build.directory}/jacoco-integration-tests.exec</destFile>
+              <propertyName>integrationTestsArgLine</propertyName>
+            </configuration>
+          </execution>
+
+          <!-- Генерує звіт про покриття коду інтеграційними тестами. -->
+          <execution>
+            <id>report-integration</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>report-integration</goal>
+            </goals>
+            <configuration>
+              <skip>${skipIntegrationTests}</skip>
+              <dataFile>${project.build.directory}/jacoco-integration-tests.exec</dataFile>
+              <outputDirectory>${project.reporting.outputDirectory}/jacoco-integration-tests</outputDirectory>
+            </configuration>
+          </execution>
+
+          <!-- Перевіряє покриття коду тестами і робить щоб збірка завершувалась з помилкою, якщо покриття нижче мінімального порогу. -->
           <execution>
             <id>check</id>
             <phase>package</phase>
@@ -140,6 +216,7 @@
               <goal>check</goal>
             </goals>
             <configuration>
+              <skip>${skipUnitTests}</skip>
               <rules>
                 <rule>
                   <element>BUNDLE</element>
@@ -154,9 +231,51 @@
               </rules>
             </configuration>
           </execution>
+
+          <!-- Перевіряє покриття коду інтеграційними тестами і робить щоб збірка завершувалась з помилкою, якщо покриття нижче мінімального порогу. -->
+          <execution>
+            <id>check-integration</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+            <configuration>
+              <skip>${skipIntegrationTests}</skip>
+              <dataFile>${project.build.directory}/jacoco-integration-tests.exec</dataFile>
+              <rules>
+                <rule>
+                  <element>CLASS</element>
+                  <includes>
+                    <include>com.college.Schedule</include>
+                  </includes>
+                  <limits>
+                    <limit>
+                      <counter>LINE</counter>
+                      <value>COVEREDRATIO</value>
+                      <minimum>1.0</minimum>
+                    </limit>
+                  </limits>
+                </rule>
+                <rule>
+                  <element>CLASS</element>
+                  <includes>
+                    <include>com.college.ScheduleController</include>
+                  </includes>
+                  <limits>
+                    <limit>
+                      <counter>LINE</counter>
+                      <value>COVEREDRATIO</value>
+                      <minimum>1.0</minimum>
+                    </limit>
+                  </limits>
+                </rule>
+              </rules>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
-      <!-- Maven Release Plugin -->
+
+      <!-- Плагін Maven Release -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
