@@ -1,0 +1,134 @@
+name: Render Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      clear_cache:
+        description: Clear the Render build cache before deploy
+        required: false
+        default: false
+        type: boolean
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+
+jobs:
+  deploy:
+    name: Sync MONGO_URI and Deploy to Render
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'main')
+    permissions:
+      contents: read
+
+    steps:
+      - name: Resolve deploy settings
+        id: settings
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_run" ]]; then
+            echo "commit_sha=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
+            echo "clear_cache=do_not_clear" >> "$GITHUB_OUTPUT"
+          else
+            echo "commit_sha=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+            if [[ "${{ inputs.clear_cache }}" == "true" ]]; then
+              echo "clear_cache=clear" >> "$GITHUB_OUTPUT"
+            else
+              echo "clear_cache=do_not_clear" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+
+      - name: Validate Render secrets
+        shell: bash
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_MONGO_URI: ${{ secrets.RENDER_MONGO_URI }}
+          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+        run: |
+          missing=()
+
+          [[ -z "$RENDER_API_KEY" ]] && missing+=("RENDER_API_KEY")
+          [[ -z "$RENDER_MONGO_URI" ]] && missing+=("RENDER_MONGO_URI")
+          [[ -z "$RENDER_SERVICE_ID" ]] && missing+=("RENDER_SERVICE_ID")
+
+          if (( ${#missing[@]} > 0 )); then
+            printf 'Missing required GitHub Actions secrets: %s\n' "${missing[*]}" >&2
+            exit 1
+          fi
+
+      - name: Upsert MONGO_URI in Render
+        shell: bash
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_MONGO_URI: ${{ secrets.RENDER_MONGO_URI }}
+          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+        run: |
+          curl --silent --show-error --fail-with-body \
+            --request PUT \
+            --url "https://api.render.com/v1/services/${RENDER_SERVICE_ID}/env-vars/MONGO_URI" \
+            --header "Authorization: Bearer ${RENDER_API_KEY}" \
+            --header "Content-Type: application/json" \
+            --data "$(jq -cn --arg value "$RENDER_MONGO_URI" '{value: $value}')"
+
+      - name: Trigger Render deploy
+        id: deploy
+        shell: bash
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+          COMMIT_SHA: ${{ steps.settings.outputs.commit_sha }}
+          CLEAR_CACHE: ${{ steps.settings.outputs.clear_cache }}
+        run: |
+          response="$(
+            curl --silent --show-error --fail-with-body \
+              --request POST \
+              --url "https://api.render.com/v1/services/${RENDER_SERVICE_ID}/deploys" \
+              --header "Authorization: Bearer ${RENDER_API_KEY}" \
+              --header "Content-Type: application/json" \
+              --data "$(jq -cn --arg commitId "$COMMIT_SHA" --arg clearCache "$CLEAR_CACHE" '{commitId: $commitId, clearCache: $clearCache}')"
+          )"
+
+          deploy_id="$(jq -r '.id // empty' <<<"$response")"
+          if [[ -z "$deploy_id" ]]; then
+            printf 'Render deploy response did not include a deploy id.\n%s\n' "$response" >&2
+            exit 1
+          fi
+
+          echo "deploy_id=${deploy_id}" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for Render deploy
+        shell: bash
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+          DEPLOY_ID: ${{ steps.deploy.outputs.deploy_id }}
+        run: |
+          for attempt in {1..40}; do
+            response="$(
+              curl --silent --show-error --fail-with-body \
+                --request GET \
+                --url "https://api.render.com/v1/services/${RENDER_SERVICE_ID}/deploys/${DEPLOY_ID}" \
+                --header "Authorization: Bearer ${RENDER_API_KEY}"
+            )"
+
+            status="$(jq -r '.status // empty' <<<"$response")"
+            printf 'Render deploy %s status: %s\n' "$DEPLOY_ID" "$status"
+
+            case "$status" in
+              live)
+                exit 0
+                ;;
+              build_failed|update_failed|canceled|cancelled|failed|deactivated)
+                printf 'Render deploy %s finished with failing status: %s\n' "$DEPLOY_ID" "$status" >&2
+                printf '%s\n' "$response" >&2
+                exit 1
+                ;;
+            esac
+
+            sleep 15
+          done
+
+          printf 'Timed out waiting for Render deploy %s to finish.\n' "$DEPLOY_ID" >&2
+          exit 1

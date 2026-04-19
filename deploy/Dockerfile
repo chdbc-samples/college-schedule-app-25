@@ -18,8 +18,8 @@ FROM eclipse-temurin:17-jre
 # Робоча директорія контейнера
 WORKDIR /app
 
-# Копіюємо jar файл і залежності з етапу збірки
-COPY --from=build /app/target/college-schedule-25-0.2.0-SNAPSHOT.jar ./app.jar
+# Копіюємо зібраний jar файл і залежності з етапу збірки
+COPY --from=build /app/target/*.jar ./app.jar
 COPY --from=build /app/target/dependency ./lib
 
 # Значення порту за замовчуванням для локального запуску

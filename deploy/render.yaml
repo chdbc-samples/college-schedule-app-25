@@ -5,6 +5,3 @@ services:
     plan: free
     dockerfilePath: ./deploy/Dockerfile
     dockerContext: .
-    envVars:
-      - key: MONGO_URI
-        sync: false
