@@ -35,10 +35,23 @@ docker run --rm -p 8081:8081 -e MONGO_URI=mongodb://host.docker.internal:27017/c
 
 Після запуску застосунок буде доступний за адресою `http://localhost:8081`.
 
-Приклад отримання опублікованого образу Docker-контейнера з GitHub Container Registry:
+Для збірки з основної гілки як тег образу Docker-контейнера використовується значення `version` з `pom.xml`, наприклад `0.3.0-snapshot`.
+Тег `latest` публікується лише тоді, коли значення `version` у `pom.xml` не містить `SNAPSHOT`.
+
+
+Перед тим, як завантажити образ, потрібно залогінитись в GitHub Package використовуючи свій GitHub-токен. Цей токен повинен мати дозвіл `read:packages`, бути створеним для того самого користувача GitHub, ім'я якого вказано в команді `docker login`, і цей користувач повинен мати принаймні read-доступ до пакета.
+
+```cmd
+set GITHUB_TOKEN=your-github-token
+echo %GITHUB_TOKEN% | docker login ghcr.io -u your-github-username --password-stdin
+
+docker pull ghcr.io/chdbc-samples/college-schedule:0.3.0-snapshot
+```
+
+Запуск контейнера з образу Docker-контейнера, опублікованого у GitHub Packages:
 
 ```bash
-docker pull ghcr.io/<organization-name>/college-schedule:latest
+docker run --rm -p 8081:8081 -e MONGO_URI=mongodb://host.docker.internal:27017/college-db ghcr.io/chdbc-samples/college-schedule:0.3.0-snapshot
 ```
 
 ## Налаштування `MONGO_URI`
