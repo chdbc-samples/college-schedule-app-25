@@ -53,12 +53,12 @@ jobs:
             version="$(grep -oPm1 '(?<=<version>)[^<]+' pom.xml | tr '[:upper:]' '[:lower:]')"
             echo "image_url=${image_repo}:${version}" >> "$GITHUB_OUTPUT"
 
-          elif [[ "${{ github.event_name }}" == "workflow_call" ]]; then
+          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
             # Для виклику з CI в pull request формуємо тег у форматі pr-<номер PR>.
             pr_number="${{ github.event.pull_request.number }}"
             if [[ -z "$pr_number" ]]; then
               # Якщо номер PR недоступний у контексті, деплой продовжувати не можна.
-              printf 'Unable to resolve pull request number for workflow_call.\n' >&2
+              printf 'Unable to resolve pull request number for pull_request context.\n' >&2
               exit 1
             fi
             echo "image_url=${image_repo}:pr-${pr_number}" >> "$GITHUB_OUTPUT"
