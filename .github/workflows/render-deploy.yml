@@ -23,10 +23,10 @@ jobs:
   deploy:
     name: Deploy to Render
     runs-on: ubuntu-latest
-    # Реальний деплой виконується для workflow_call, ручного запуску або після успішного CI в main.
+    # Реальний деплой виконується для виклику з pull request, ручного запуску або після успішного CI в main.
     if: >
-      github.event_name == 'workflow_call' ||
       github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'pull_request' ||
       (github.event.workflow_run.conclusion == 'success' &&
        github.event.workflow_run.head_branch == 'main')
     # Надає доступ до читання вмісту репозиторію.
