@@ -1,6 +1,9 @@
 name: Render Deploy
 
 on:
+  # Дозволяє викликати workflow з інших workflow, наприклад із CI для деплою з pull request.
+  workflow_call:
+
   # Дозволяє вручну запустити деплой із вказаним тегом образу Docker-контейнера.
   workflow_dispatch:
     inputs:
@@ -10,44 +13,19 @@ on:
         default: latest
         type: string
 
-  # Показує workflow у pull request і дає змогу перевірити його конфігурацію до merge.
-  pull_request:
-
-  # Запускає автодеплой після успішного завершення workflow CI для гілки main.
+  # Запускає деплой після успішного завершення workflow CI для гілки main.
   workflow_run:
     workflows: ["CI"]
     types: [completed]
 
 jobs:
-  # Показує в pull request, який саме образ Docker-контейнера буде використано для деплою.
-  validate:
-    name: Validate Render Deploy Inputs
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-
-    steps:
-      # Крок 1: формування адреси образу Docker-контейнера для pull request.
-      - name: Resolve deploy settings
-        shell: bash
-        run: |
-          image_repo="ghcr.io/${{ github.repository_owner }}/college-schedule"
-          image_url="${image_repo}:pr-${{ github.event.pull_request.number }}"
-
-          echo "Resolved PR image: ${image_url}"
-          {
-            echo "## Render Deploy Validation"
-            echo "Image URL for PR deploy:"
-            echo '```text'
-            echo "${image_url}"
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
-
   # Виконує деплой застосунку в Render із вказаним образом Docker-контейнера.
   deploy:
     name: Deploy to Render
     runs-on: ubuntu-latest
-    # Реальний деплой виконується тільки для manual run або workflow_run від CI в main.
+    # Реальний деплой виконується для workflow_call, ручного запуску або після успішного CI в main.
     if: >
+      github.event_name == 'workflow_call' ||
       github.event_name == 'workflow_dispatch' ||
       (github.event.workflow_run.conclusion == 'success' &&
        github.event.workflow_run.head_branch == 'main')
@@ -71,9 +49,22 @@ jobs:
           image_repo="ghcr.io/${{ github.repository_owner }}/college-schedule"
 
           if [[ "${{ github.event_name }}" == "workflow_run" ]]; then
+            # Для автодеплою після CI в main використовуємо версію з pom.xml.
             version="$(grep -oPm1 '(?<=<version>)[^<]+' pom.xml | tr '[:upper:]' '[:lower:]')"
             echo "image_url=${image_repo}:${version}" >> "$GITHUB_OUTPUT"
+
+          elif [[ "${{ github.event_name }}" == "workflow_call" ]]; then
+            # Для виклику з CI в pull request формуємо тег у форматі pr-<номер PR>.
+            pr_number="${{ github.event.pull_request.number }}"
+            if [[ -z "$pr_number" ]]; then
+              # Якщо номер PR недоступний у контексті, деплой продовжувати не можна.
+              printf 'Unable to resolve pull request number for workflow_call.\n' >&2
+              exit 1
+            fi
+            echo "image_url=${image_repo}:pr-${pr_number}" >> "$GITHUB_OUTPUT"
+
           else
+            # Для ручного запуску використовуємо тег, переданий через input image_tag.
             echo "image_url=${image_repo}:${{ inputs.image_tag }}" >> "$GITHUB_OUTPUT"
           fi
 
