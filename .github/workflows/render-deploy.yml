@@ -1,6 +1,7 @@
 name: Render Deploy
 
 on:
+  # Дозволяє вручну запустити деплой із вказаним тегом образу Docker-контейнера.
   workflow_dispatch:
     inputs:
       image_tag:
@@ -8,21 +9,46 @@ on:
         required: false
         default: latest
         type: string
-  # Потрібно, щоб workflow було видно та можна було перевірити в pull request до merge в main.
+
+  # Показує workflow у pull request і дає змогу перевірити його конфігурацію до merge.
   pull_request:
+
+  # Запускає автодеплой після успішного завершення workflow CI для гілки main.
   workflow_run:
     workflows: ["CI"]
     types: [completed]
 
 jobs:
-  # Виконує деплой застосунку в Render із вказаним Docker-образом.
+  # Показує в pull request, який саме образ Docker-контейнера буде використано для деплою.
+  validate:
+    name: Validate Render Deploy Inputs
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      # Крок 1: формування адреси образу Docker-контейнера для pull request.
+      - name: Resolve deploy settings
+        shell: bash
+        run: |
+          image_repo="ghcr.io/${{ github.repository_owner }}/college-schedule"
+          image_url="${image_repo}:pr-${{ github.event.pull_request.number }}"
+
+          echo "Resolved PR image: ${image_url}"
+          {
+            echo "## Render Deploy Validation"
+            echo "Image URL for PR deploy:"
+            echo '```text'
+            echo "${image_url}"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # Виконує деплой застосунку в Render із вказаним образом Docker-контейнера.
   deploy:
     name: Deploy to Render
     runs-on: ubuntu-latest
-    # Дозволяє запуск вручну, у pull request або після успішного завершення workflow CI для гілки main.
+    # Реальний деплой виконується тільки для manual run або workflow_run від CI в main.
     if: >
       github.event_name == 'workflow_dispatch' ||
-      github.event_name == 'pull_request' ||
       (github.event.workflow_run.conclusion == 'success' &&
        github.event.workflow_run.head_branch == 'main')
     # Надає доступ до читання вмісту репозиторію.
@@ -30,7 +56,7 @@ jobs:
       contents: read
 
     steps:
-      # Крок 1: визначення адреси Docker-образу для деплою.
+      # Крок 1: визначення адреси образу Docker-контейнера для деплою.
       - name: Resolve deploy settings
         id: settings
         shell: bash
@@ -60,7 +86,7 @@ jobs:
             exit 1
           fi
 
-      # Крок 3: запуск нового деплою в Render із заданим Docker-образом.
+      # Крок 3: запуск нового деплою в Render із заданим образом Docker-контейнера.
       - name: Trigger Render deploy
         id: deploy
         shell: bash
