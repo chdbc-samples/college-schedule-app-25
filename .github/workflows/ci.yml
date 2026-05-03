@@ -281,7 +281,7 @@ jobs:
   # Етап 8: запустити E2E UI-тести проти вже розгорнутого Render UR
   e2e-ui-tests:
     name: E2E UI Tests
-    needs: build
+    needs: deploy-render-pr
     if: github.event_name == 'pull_request'
     permissions:
       contents: read
