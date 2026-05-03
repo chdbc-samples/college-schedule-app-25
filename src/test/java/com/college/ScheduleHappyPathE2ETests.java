@@ -23,6 +23,8 @@ import org.junit.jupiter.api.Test;
 
 class ScheduleHappyPathE2ETests {
 
+    // Підтримуємо конфігурацію через JVM properties та environment variables,
+    // щоб один і той самий тест можна було запускати локально й у CI.
     private static final String BASE_URL_PROPERTY = "e2e.base-url";
     private static final String BASE_URL_ENV = "E2E_BASE_URL";
     private static final String SELENIUM_CDP_URL_PROPERTY = "e2e.selenium-cdp-url";
@@ -31,7 +33,7 @@ class ScheduleHappyPathE2ETests {
     private static final String ARTIFACTS_DIR_ENV = "E2E_ARTIFACTS_DIR";
     private static final String PAGE_READY_TIMEOUT_MILLIS_PROPERTY = "e2e.page-ready-timeout-millis";
     private static final String PAGE_READY_TIMEOUT_MILLIS_ENV = "E2E_PAGE_READY_TIMEOUT_MILLIS";
-    private static final String SCHEDULE_PAGE_TITLE = "\u0420\u043e\u0437\u043a\u043b\u0430\u0434 \u043a\u043e\u043b\u0435\u0434\u0436\u0443";
+    private static final String SCHEDULE_PAGE_TITLE = "Розклад коледжу";
     private static final String RENDER_HOST_SUFFIX = ".onrender.com";
     private static final int WAIT_TIMEOUT_MILLIS = 15000;
     private static final int POLL_INTERVAL_MILLIS = 250;
@@ -55,9 +57,12 @@ class ScheduleHappyPathE2ETests {
     private Page page;
     private String createdCourseName;
 
+    // Ініціалізуємо Playwright, директорії артефактів і браузерне оточення перед кожним тестом.
     @BeforeEach
     void setUp() {
         baseUrl = resolveBaseUrl();
+
+        // Для E2E URL є обов'язковим, тому відсутність конфігурації вважаємо помилкою тестового запуску.
         if (baseUrl == null || baseUrl.isBlank()) {
             throw new IllegalStateException("Set e2e.base-url or E2E_BASE_URL to run E2E UI tests.");
         }
@@ -71,6 +76,8 @@ class ScheduleHappyPathE2ETests {
 
         playwright = Playwright.create();
         browser = createBrowser();
+        
+        // Записуємо відео кожного прогону, щоб у CI можна було відтворити UI-поведінку.
         browserContext = browser.newContext(new Browser.NewContextOptions()
             .setRecordVideoDir(videosDir)
             .setRecordVideoSize(VIDEO_WIDTH, VIDEO_HEIGHT)
@@ -80,10 +87,12 @@ class ScheduleHappyPathE2ETests {
         page.setDefaultNavigationTimeout(resolvePlaywrightTimeoutMillis());
     }
 
+    // Закриваємо браузерні ресурси та прибираємо створений тестом запис, якщо він залишився.
     @AfterEach
     void tearDown() {
         if (page != null && createdCourseName != null) {
             try {
+                // Якщо тест впав після створення запису, намагаємось прибрати тестові дані.
                 deleteScheduleRow(createdCourseName);
             } catch (Exception exception) {
                 // Preserve the original test failure; cleanup is best effort.
@@ -95,26 +104,32 @@ class ScheduleHappyPathE2ETests {
         if (browserContext != null) {
             browserContext.close();
         }
+
         if (browser != null) {
             browser.close();
         }
+
         if (playwright != null) {
             playwright.close();
         }
     }
 
+    // Happy-path сценарій: створюємо запис через UI, перевіряємо його появу і видаляємо назад через UI.
     @Test
     void scheduleHappyPathCreatesAndDeletesEntry() {
         runWithDiagnostics("schedule-happy-path-creates-and-deletes-entry", () -> {
+            // Генеруємо унікальні значення, щоб тест не конфліктував з уже наявними даними.
             String uniqueSuffix = String.valueOf(Instant.now().toEpochMilli());
             String uniqueCourseName = "E2E Course " + uniqueSuffix;
             String uniqueStudentName = "E2E Student " + uniqueSuffix;
             createdCourseName = uniqueCourseName;
 
+            // Переходимо на сторінку додавання і чекаємо, поки форма стане видимою.
             page.navigate(baseUrl + "/add");
             waitForAddPageForm();
             assertThat(page.locator("form").count()).isEqualTo(1);
 
+            // Заповнюємо форму тестовими даними.
             setInputValue("studentFirstName", uniqueStudentName);
             setInputValue("studentLastName", "Tester");
             setInputValue("teacherFirstName", "UI");
@@ -127,30 +142,36 @@ class ScheduleHappyPathE2ETests {
             setInputValue("startTime", "09:00:00");
             setInputValue("endTime", "10:30:00");
 
+            // Відправляємо форму і чекаємо повернення на головну сторінку зі списком розкладу.
             page.locator("button[type='submit']").click();
             page.waitForURL(baseUrl + "/");
             waitForSchedulePageHeader();
 
+            // Перевіряємо, що щойно створений рядок дійсно з'явився в таблиці.
             Locator createdRow = waitForRowContaining(uniqueCourseName,
                 "Created schedule row did not appear on the main page.");
             assertThat(createdRow.textContent())
                 .contains(uniqueStudentName)
                 .contains(uniqueCourseName);
 
+            // Видаляємо створений запис у межах самого happy-path сценарію.
             deleteScheduleRow(uniqueCourseName);
             createdCourseName = null;
         });
     }
 
+    // Видаляє рядок із таблиці за унікальною назвою курсу і перевіряє, що він зник із UI.
     private void deleteScheduleRow(String uniqueCourseName) {
         page.navigate(baseUrl + "/");
         waitForSchedulePageHeader();
 
+        // Якщо рядок уже зник, додаткових дій не потрібно.
         Locator rowToDelete = findRowContaining(uniqueCourseName);
         if (rowToDelete == null) {
             return;
         }
 
+        // Натискаємо кнопку видалення і чекаємо, поки рядок зникне з таблиці.
         rowToDelete.locator("button[type='submit']").click();
         page.waitForURL(baseUrl + "/");
         waitForSchedulePageHeader();
@@ -160,11 +181,13 @@ class ScheduleHappyPathE2ETests {
         assertThat(page.locator("body").textContent()).doesNotContain(uniqueCourseName);
     }
 
+    // Чекає появи рядка з потрібним текстом і повертає знайдений locator.
     private Locator waitForRowContaining(String text, String failureMessage) {
         waitFor(() -> findRowContaining(text) != null, failureMessage);
         return findRowContaining(text);
     }
 
+    // Шукає перший рядок таблиці, у тексті якого міститься потрібне значення.
     private Locator findRowContaining(String text) {
         Locator rows = page.locator("tbody tr");
         int count = rows.count();
@@ -178,10 +201,12 @@ class ScheduleHappyPathE2ETests {
         return null;
     }
 
+    // Заповнює input-поле за його HTML name-атрибутом.
     private void setInputValue(String fieldName, String value) {
         page.locator("[name='" + fieldName + "']").fill(value);
     }
 
+    // Чекає, поки на головній сторінці з'явиться заголовок розкладу.
     private void waitForSchedulePageHeader() {
         page.locator("h1")
             .filter(new Locator.FilterOptions().setHasText(SCHEDULE_PAGE_TITLE))
@@ -191,6 +216,7 @@ class ScheduleHappyPathE2ETests {
                 .setTimeout((double) pageReadyTimeoutMillis));
     }
 
+    // Чекає, поки сторінка додавання повністю відрендерить форму.
     private void waitForAddPageForm() {
         page.locator("form")
             .first()
@@ -199,6 +225,7 @@ class ScheduleHappyPathE2ETests {
                 .setTimeout((double) pageReadyTimeoutMillis));
     }
 
+    // Простий polling helper для умов, які не мають зручного вбудованого wait у Playwright.
     private void waitFor(BooleanSupplier condition, String failureMessage) {
         long deadline = System.currentTimeMillis() + WAIT_TIMEOUT_MILLIS;
         while (System.currentTimeMillis() < deadline) {
@@ -210,6 +237,7 @@ class ScheduleHappyPathE2ETests {
         throw new AssertionError(failureMessage);
     }
 
+    // Зчитує та нормалізує базовий URL застосунку з property або environment variable.
     private String resolveBaseUrl() {
         String configuredUrl = resolveOptionalValue(BASE_URL_PROPERTY, BASE_URL_ENV);
         if (configuredUrl == null || configuredUrl.isBlank()) {
@@ -219,6 +247,7 @@ class ScheduleHappyPathE2ETests {
         return normalizeBaseUrl(configuredUrl);
     }
 
+    // Прибирає зайвий "/" наприкінці та перевіряє, що URL абсолютний і коректний.
     private String normalizeBaseUrl(String configuredUrl) {
         String normalizedUrl = configuredUrl.endsWith("/")
             ? configuredUrl.substring(0, configuredUrl.length() - 1)
@@ -234,6 +263,7 @@ class ScheduleHappyPathE2ETests {
         return normalizedUrl;
     }
 
+    // Читає значення спочатку з JVM property, а якщо його нема — із змінної середовища.
     private String resolveOptionalValue(String propertyName, String envName) {
         String configuredValue = System.getProperty(propertyName);
         if (configuredValue == null || configuredValue.isBlank()) {
@@ -242,8 +272,10 @@ class ScheduleHappyPathE2ETests {
         return configuredValue;
     }
 
+    // Вибирає спосіб запуску браузера: через Selenium CDP у CI або локальний headless Chromium.
     private Browser createBrowser() {
         if (seleniumCdpUrl != null && !seleniumCdpUrl.isBlank()) {
+            // У CI підключаємось до вже запущеного Chromium у Selenium через CDP.
             return playwright.chromium().connectOverCDP(seleniumCdpUrl);
         }
 
@@ -252,6 +284,7 @@ class ScheduleHappyPathE2ETests {
             .setArgs(List.of("--disable-dev-shm-usage", "--no-sandbox")));
     }
 
+    // Визначає директорію для відео та screenshot, з урахуванням override через конфігурацію.
     private Path resolveArtifactsDir() {
         String configuredArtifactsDir = resolveOptionalValue(ARTIFACTS_DIR_PROPERTY, ARTIFACTS_DIR_ENV);
         if (configuredArtifactsDir == null || configuredArtifactsDir.isBlank()) {
@@ -260,21 +293,26 @@ class ScheduleHappyPathE2ETests {
         return Paths.get(configuredArtifactsDir).toAbsolutePath().normalize();
     }
 
+    // Обирає timeout готовності сторінки: кастомний, Render-специфічний або дефолтний.
     private int resolvePageReadyTimeoutMillis() {
         String configuredTimeout = resolveOptionalValue(
             PAGE_READY_TIMEOUT_MILLIS_PROPERTY,
             PAGE_READY_TIMEOUT_MILLIS_ENV
         );
+        
         if (configuredTimeout == null || configuredTimeout.isBlank()) {
+            // Render може запускати програму помітно довше, ніж локальне середовище.
             return isRenderBaseUrl() ? RENDER_TIMEOUT_MILLIS : DEFAULT_PAGE_READY_TIMEOUT_MILLIS;
         }
         return Integer.parseInt(configuredTimeout);
     }
 
+    // Повертає базовий timeout Playwright для дій і навігації.
     private double resolvePlaywrightTimeoutMillis() {
         return isRenderBaseUrl() ? RENDER_TIMEOUT_MILLIS : DEFAULT_TIMEOUT_MILLIS;
     }
 
+    // Перевіряє, чи тести зараз виконуються проти Render-host, де очікування довші.
     private boolean isRenderBaseUrl() {
         if (baseUrl == null || baseUrl.isBlank()) {
             return false;
@@ -285,6 +323,7 @@ class ScheduleHappyPathE2ETests {
         return host != null && host.endsWith(RENDER_HOST_SUFFIX);
     }
 
+    // Створює директорію артефактів і перетворює I/O помилки на зрозумілу помилку конфігурації тесту.
     private void createDirectory(Path directory) {
         try {
             Files.createDirectories(directory);
@@ -293,15 +332,18 @@ class ScheduleHappyPathE2ETests {
         }
     }
 
-    private void runWithDiagnostics(String testName, CheckedRunnable testBody) {
+    // Запускає тест так, щоб при будь-якому падінні спочатку зберегти screenshot сторінки.
+    private void runWithDiagnostics(String testName, Runnable testBody) {
         try {
             testBody.run();
         } catch (Throwable throwable) {
+            // Screenshot робимо до cleanup, щоб зберегти реальний стан сторінки в момент падіння.
             captureFailureScreenshot(testName);
             rethrowUnchecked(throwable);
         }
     }
 
+    // Зберігає full-page screenshot з унікальним ім'ям файлу в директорію артефактів.
     private void captureFailureScreenshot(String testName) {
         if (page == null) {
             return;
@@ -314,26 +356,28 @@ class ScheduleHappyPathE2ETests {
             .setType(ScreenshotType.PNG));
     }
 
+    // Формує ім'я файлу артефакту з назви тесту та timestamp.
     private String buildArtifactFileName(String testName, String extension) {
         return sanitizeFileName(testName) + "-" + Instant.now().toEpochMilli() + "." + extension;
     }
 
+    // Прибирає з імені файлу символи, які небажані для файлової системи.
     private String sanitizeFileName(String value) {
         return value.replaceAll("[^a-zA-Z0-9-_]+", "-");
     }
 
+    // Перекидає checked/unchecked помилки без втрати первинного типу RuntimeException або Error.
     private void rethrowUnchecked(Throwable throwable) {
         if (throwable instanceof RuntimeException) {
             throw (RuntimeException) throwable;
         }
+
         if (throwable instanceof Error) {
             throw (Error) throwable;
         }
+
         throw new IllegalStateException(throwable);
     }
 
-    @FunctionalInterface
-    private interface CheckedRunnable {
-        void run() throws Exception;
-    }
+    // Дозволяє передавати в helper-и lambda, які можуть викликати checked exception.
 }

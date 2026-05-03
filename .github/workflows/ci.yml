@@ -278,7 +278,7 @@ jobs:
     uses: ./.github/workflows/render-deploy.yml
     secrets: inherit
 
-  # Етап 8: запустити E2E UI-тести проти вже розгорнутого Render UR
+  # Етап 8: запустити E2E UI-тести проти програми, яка була успішно розгорнута на Render.com
   e2e-ui-tests:
     name: E2E UI Tests
     needs: deploy-render-pr
