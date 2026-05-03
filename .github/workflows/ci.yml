@@ -277,3 +277,13 @@ jobs:
       contents: read
     uses: ./.github/workflows/render-deploy.yml
     secrets: inherit
+
+  e2e-ui-tests:
+    name: E2E UI Tests
+    needs: deploy-render-pr
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/run-e2e-test.yml
+    with:
+      application_url: ${{ needs.deploy-render-pr.outputs.application_url }}
