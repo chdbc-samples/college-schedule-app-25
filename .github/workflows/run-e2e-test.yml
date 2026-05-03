@@ -19,7 +19,7 @@ on:
 jobs:
   # Виконує happy-path E2E UI-тести в Selenium Chromium проти вже розгорнутого застосунку.
   e2e-ui-tests:
-    name: E2E UI Tests
+    name: Run E2E UI Tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
     services:

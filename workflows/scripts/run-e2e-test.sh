@@ -12,9 +12,12 @@ log() {
 : > "$LOG_FILE"
 
 # Wait until the Selenium service container is ready to accept sessions.
-for attempt in {1..30}; do
+for attempt in {1..90}; do
   ready_response="$(
-    curl --silent --show-error http://127.0.0.1:4444/status
+    curl --silent --show-error \
+      --connect-timeout 2 \
+      --max-time 10 \
+      http://127.0.0.1:4444/status
   )" || ready_response=""
 
   if [[ -n "$ready_response" ]]; then
@@ -41,10 +44,12 @@ fi
 SESSION_ID=""
 CDP_URL=""
 
-for attempt in {1..15}; do
+for attempt in {1..30}; do
   tmp_response_file="$(mktemp)"
   http_code="$(
     curl --silent --show-error \
+      --connect-timeout 2 \
+      --max-time 15 \
       --output "$tmp_response_file" \
       --write-out "%{http_code}" \
       --request POST \

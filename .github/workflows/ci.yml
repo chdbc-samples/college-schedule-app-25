@@ -268,20 +268,17 @@ jobs:
     uses: ./.github/workflows/docker-publish.yml
     secrets: inherit
 
-  # # Етап 7: виконати деплой у Render для pull request після успішної публікації образу Docker-контейнера.
-  # deploy-render-pr:
-  #   name: Deploy Render PR
-  #   needs: publish-docker
-  #   if: github.event_name == 'pull_request'
-  #   permissions:
-  #     contents: read
-  #   uses: ./.github/workflows/render-deploy.yml
-  #   secrets: inherit
+  # Етап 7: виконати деплой у Render для pull request після успішної публікації образу Docker-контейнера.
+  deploy-render-pr:
+    name: Deploy Render PR
+    needs: publish-docker
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/render-deploy.yml
+    secrets: inherit
 
-  # Етап 8: тимчасово запускати E2E UI-тести проти вже розгорнутого Render URL,
-  # не чекаючи PR-specific deploy.
-  # TODO: повернути нормальний flow після стабілізації E2E bootstrap:
-  # needs: deploy-render-pr і application_url з needs.deploy-render-pr.outputs.application_url.
+  # Етап 8: запустити E2E UI-тести проти вже розгорнутого Render UR
   e2e-ui-tests:
     name: E2E UI Tests
     needs: build
@@ -290,4 +287,4 @@ jobs:
       contents: read
     uses: ./.github/workflows/run-e2e-test.yml
     with:
-      application_url: https://college-schedule-app-0-3-0.onrender.com
+      application_url: ${{ needs.deploy-render-pr.outputs.application_url }}
