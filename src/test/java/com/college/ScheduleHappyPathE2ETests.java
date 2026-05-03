@@ -18,7 +18,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -59,8 +58,9 @@ class ScheduleHappyPathE2ETests {
     @BeforeEach
     void setUp() {
         baseUrl = resolveBaseUrl();
-        Assumptions.assumeTrue(baseUrl != null && !baseUrl.isBlank(),
-            "Set e2e.base-url or E2E_BASE_URL to run E2E UI tests.");
+        if (baseUrl == null || baseUrl.isBlank()) {
+            throw new IllegalStateException("Set e2e.base-url or E2E_BASE_URL to run E2E UI tests.");
+        }
         seleniumCdpUrl = resolveOptionalValue(SELENIUM_CDP_URL_PROPERTY, SELENIUM_CDP_URL_ENV);
         pageReadyTimeoutMillis = resolvePageReadyTimeoutMillis();
         artifactsDir = resolveArtifactsDir();
