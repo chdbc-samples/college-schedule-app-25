@@ -112,6 +112,7 @@ class ScheduleHappyPathE2ETests {
             createdCourseName = uniqueCourseName;
 
             page.navigate(baseUrl + "/add");
+            waitForAddPageForm();
             assertThat(page.locator("form").count()).isEqualTo(1);
 
             setInputValue("studentFirstName", uniqueStudentName);
@@ -184,6 +185,14 @@ class ScheduleHappyPathE2ETests {
     private void waitForSchedulePageHeader() {
         page.locator("h1")
             .filter(new Locator.FilterOptions().setHasText(SCHEDULE_PAGE_TITLE))
+            .first()
+            .waitFor(new Locator.WaitForOptions()
+                .setState(WaitForSelectorState.VISIBLE)
+                .setTimeout((double) pageReadyTimeoutMillis));
+    }
+
+    private void waitForAddPageForm() {
+        page.locator("form")
             .first()
             .waitFor(new Locator.WaitForOptions()
                 .setState(WaitForSelectorState.VISIBLE)

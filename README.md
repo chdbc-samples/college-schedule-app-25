@@ -368,12 +368,12 @@ CI запускається автоматично для:
 5. `publish`
 6. `publish-docker`
 7. `deploy-render-pr` для pull request
-8. `e2e-ui-tests` для pull request після успішного `deploy-render-pr`
+8. `e2e-ui-tests` для pull request після успішного `build`, тимчасово проти `https://college-schedule-app-0-3-0.onrender.com`
 
 Пов'язані workflow:
-1. `.github/workflows/render-deploy.yml` виконує деплой у Render і повертає `application_url`
-2. `.github/workflows/run-e2e-test.yml` приймає `application_url`, піднімає `selenium/standalone-chromium:latest` як service container, викликає `workflows/scripts/run-e2e-test.sh` і завантажує artifacts
-3. `workflows/scripts/run-e2e-test.sh` створює Selenium session, налаштовує CDP URL для Playwright і запускає `mvn -P e2e-ui` на GitHub runner
+1. `.github/workflows/run-e2e-test.yml` приймає `application_url`, піднімає `selenium/standalone-chromium:latest` як service container, викликає `workflows/scripts/run-e2e-test.sh` і завантажує artifacts
+2. `workflows/scripts/run-e2e-test.sh` створює Selenium session, налаштовує CDP URL для Playwright і запускає `mvn -P e2e-ui` на GitHub runner
+3. У `CI` workflow job `e2e-ui-tests` тимчасово використовує фіксований URL `https://college-schedule-app-0-3-0.onrender.com`
 
 GitHub Actions:
 1. `run-e2e-test` також підтримує ручний запуск через `workflow_dispatch` з обов'язковим параметром `application_url`
