@@ -101,6 +101,94 @@ class ScheduleFlowIntegrationTests {
     }
 
     @Test
+    void editPageRendersFormWithExistingScheduleModel() throws Exception {
+        Schedule saved = scheduleRepository.save(new Schedule(
+            "Аліса",
+            "Мельник",
+            "Іван",
+            "Петренко",
+            "Вступ до програмування",
+            "Комп`ютерні науки",
+            "210",
+            "Осінь",
+            "2024",
+            "09:00:00",
+            "10:30:00"
+        ));
+
+        mockMvc.perform(get("/edit/{id}", saved.getId()))
+            .andExpect(status().isOk())
+            .andExpect(view().name("edit"))
+            .andExpect(model().attributeExists("schedule"))
+            .andExpect(content().string(org.hamcrest.Matchers.containsString("Вступ до програмування")));
+    }
+
+    @Test
+    void editPageRedirectsToMainPageWhenScheduleIsMissing() throws Exception {
+        mockMvc.perform(get("/edit/{id}", "missing-id"))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl("/"));
+    }
+
+    @Test
+    void editEndpointUpdatesPersistedScheduleInMongo() throws Exception {
+        Schedule saved = scheduleRepository.save(new Schedule(
+            "Аліса",
+            "Мельник",
+            "Іван",
+            "Петренко",
+            "Вступ до програмування",
+            "Комп`ютерні науки",
+            "210",
+            "Осінь",
+            "2024",
+            "09:00:00",
+            "10:30:00"
+        ));
+
+        mockMvc.perform(post("/edit/{id}", saved.getId())
+                .param("studentFirstName", "Оновлена Аліса")
+                .param("studentLastName", "Мельник")
+                .param("teacherFirstName", "Іван")
+                .param("teacherLastName", "Петренко")
+                .param("courseName", "Тестування ПЗ")
+                .param("departmentName", "QA")
+                .param("roomNumber", "305")
+                .param("semester", "Весна")
+                .param("year", "2026")
+                .param("startTime", "11:00:00")
+                .param("endTime", "12:30:00"))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl("/"));
+
+        Schedule updated = scheduleRepository.findById(saved.getId()).orElseThrow();
+        assertThat(updated.getStudentFirstName()).isEqualTo("Оновлена Аліса");
+        assertThat(updated.getCourseName()).isEqualTo("Тестування ПЗ");
+        assertThat(updated.getDepartmentName()).isEqualTo("QA");
+        assertThat(updated.getRoomNumber()).isEqualTo("305");
+    }
+
+    @Test
+    void editEndpointRedirectsToMainPageWhenScheduleIsMissing() throws Exception {
+        mockMvc.perform(post("/edit/{id}", "missing-id")
+                .param("studentFirstName", "Оновлена Аліса")
+                .param("studentLastName", "Мельник")
+                .param("teacherFirstName", "Іван")
+                .param("teacherLastName", "Петренко")
+                .param("courseName", "Тестування ПЗ")
+                .param("departmentName", "QA")
+                .param("roomNumber", "305")
+                .param("semester", "Весна")
+                .param("year", "2026")
+                .param("startTime", "11:00:00")
+                .param("endTime", "12:30:00"))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl("/"));
+
+        assertThat(scheduleRepository.findAll()).isEmpty();
+    }
+
+    @Test
     void deleteEndpointRemovesPersistedScheduleFromMongo() throws Exception {
         Schedule saved = scheduleRepository.save(new Schedule(
             "Аліса",
