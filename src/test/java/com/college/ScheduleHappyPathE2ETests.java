@@ -36,7 +36,7 @@ class ScheduleHappyPathE2ETests {
     private static final String SCHEDULE_PAGE_TITLE = "Розклад коледжу";
     private static final String RENDER_HOST_SUFFIX = ".onrender.com";
     private static final int WAIT_TIMEOUT_MILLIS = 15000;
-    private static final int POLL_INTERVAL_MILLIS = 250;
+    private static final int POLL_INTERVAL_MILLIS = 1200;
     private static final int DEFAULT_PAGE_READY_TIMEOUT_MILLIS = 180000;
     private static final int DEFAULT_TIMEOUT_MILLIS = 30000;
     private static final int RENDER_TIMEOUT_MILLIS = 180000;
@@ -84,7 +84,7 @@ class ScheduleHappyPathE2ETests {
             .setViewportSize(VIEWPORT_WIDTH, VIEWPORT_HEIGHT));
         page = browserContext.newPage();
         page.setDefaultTimeout(resolvePlaywrightTimeoutMillis());
-        page.setDefaultNavigationTimeout(resolvePlaywrightTimeoutMillis());
+        page.setDefaultNavigationTimeout(pageReadyTimeoutMillis);
     }
 
     // Закриваємо браузерні ресурси та прибираємо створений тестом запис, якщо він залишився.
@@ -125,7 +125,7 @@ class ScheduleHappyPathE2ETests {
             createdCourseName = uniqueCourseName;
 
             // Переходимо на сторінку додавання і чекаємо, поки форма стане видимою.
-            page.navigate(baseUrl + "/add");
+            navigateTo(baseUrl + "/add");
             waitForAddPageForm();
             assertThat(page.locator("form").count()).isEqualTo(1);
 
@@ -162,7 +162,7 @@ class ScheduleHappyPathE2ETests {
 
     // Видаляє рядок із таблиці за унікальною назвою курсу і перевіряє, що він зник із UI.
     private void deleteScheduleRow(String uniqueCourseName) {
-        page.navigate(baseUrl + "/");
+        navigateTo(baseUrl + "/");
         waitForSchedulePageHeader();
 
         // Якщо рядок уже зник, додаткових дій не потрібно.
@@ -235,6 +235,26 @@ class ScheduleHappyPathE2ETests {
             page.waitForTimeout(POLL_INTERVAL_MILLIS);
         }
         throw new AssertionError(failureMessage);
+    }
+
+    // Якщо застосунок ще не доступний, повторює навігацію в межах уже налаштованого readiness timeout.
+    private void navigateTo(String url) {
+        long deadline = System.currentTimeMillis() + pageReadyTimeoutMillis;
+        RuntimeException lastFailure = null;
+        while (System.currentTimeMillis() < deadline) {
+            try {
+                page.navigate(url);
+                return;
+            } catch (RuntimeException exception) {
+                lastFailure = exception;
+                page.waitForTimeout(POLL_INTERVAL_MILLIS);
+            }
+        }
+        throw new AssertionError(
+            "Application at " + url + " did not become available within "
+                + pageReadyTimeoutMillis + " ms.",
+            lastFailure
+        );
     }
 
     // Зчитує та нормалізує базовий URL застосунку з property або environment variable.

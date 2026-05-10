@@ -321,10 +321,13 @@ Audit done.
 `mvn test`
 2. Тільки integration-тести:
 `mvn -DskipUnitTests=true verify`
-3. Тільки E2E UI-тести проти вже розгорнутого середовища:
-`mvn -B -P e2e-ui '-Dcheckstyle.skip=true' '-DskipUnitTests=true' '-DskipIntegrationTests=true' '-De2e.base-url=https://your-app.onrender.com' verify`
+3. Тільки E2E UI-тести проти вже розгорнутого середовища за адресою https://your-app.onrender.com:
+```
+set DEBUG=pw:api,pw:browser
+mvn -B -P e2e-ui "-Dcheckstyle.skip=true" "-DskipUnitTests=true" "-DskipIntegrationTests=true" "-De2e.base-url=https://your-app.onrender.com" clean verify
+```
 4. Повна перевірка:
-`mvn verify`
+`mvn clean verify`
 
 Звіти:
 1. Unit test reports: `target/surefire-reports/`

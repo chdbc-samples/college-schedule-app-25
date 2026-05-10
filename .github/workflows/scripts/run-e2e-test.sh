@@ -122,9 +122,11 @@ trap cleanup EXIT
 CDP_PATH="${CDP_URL#ws://*/}"
 export E2E_SELENIUM_CDP_URL="ws://127.0.0.1:4444/${CDP_PATH}"
 export E2E_ARTIFACTS_DIR="${E2E_ARTIFACTS_DIR:-target/e2e-artifacts}"
+export DEBUG="pw:api,pw:browser"
 
 # Логуємо ключові параметри перед стартом Maven, щоб легше діагностувати CI-запуск.
 log "Resolved Playwright CDP endpoint: ${E2E_SELENIUM_CDP_URL}"
+log "Enabled Playwright debug namespaces: ${DEBUG}"
 log "Starting Maven E2E UI test run."
 
 # Запускаємо Maven-профіль E2E UI і одночасно пишемо консольний вивід у CI-лог.
