@@ -122,6 +122,8 @@ class ScheduleHappyPathE2ETests {
             String uniqueSuffix = String.valueOf(Instant.now().toEpochMilli());
             String uniqueCourseName = "E2E Course " + uniqueSuffix;
             String uniqueStudentName = "E2E Student " + uniqueSuffix;
+            String updatedCourseName = uniqueCourseName + " Updated";
+            String updatedStudentName = uniqueStudentName + " Updated";
             createdCourseName = uniqueCourseName;
 
             // Переходимо на сторінку додавання і чекаємо, поки форма стане видимою.
@@ -155,7 +157,22 @@ class ScheduleHappyPathE2ETests {
                 .contains(uniqueCourseName);
 
             // Видаляємо створений запис у межах самого happy-path сценарію.
-            deleteScheduleRow(uniqueCourseName);
+            createdRow.locator("a").filter(new Locator.FilterOptions().setHasText("Редагувати")).click();
+            waitForAddPageForm();
+            setInputValue("studentFirstName", updatedStudentName);
+            setInputValue("courseName", updatedCourseName);
+            page.locator("button[type='submit']").click();
+            page.waitForURL(baseUrl + "/");
+            waitForSchedulePageHeader();
+
+            Locator updatedRow = waitForRowContaining(updatedCourseName,
+                "Updated schedule row did not appear on the main page.");
+            assertThat(updatedRow.textContent())
+                .contains(updatedStudentName)
+                .contains(updatedCourseName);
+
+            createdCourseName = updatedCourseName;
+            deleteScheduleRow(updatedCourseName);
             createdCourseName = null;
         });
     }

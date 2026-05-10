@@ -39,9 +39,12 @@
                 <td th:text="${schedule.startTime}"></td>
                 <td th:text="${schedule.endTime}"></td>
                 <td>
-                    <form th:action="@{/delete/{id}(id=${schedule.id})}" method="post">
-                        <button type="submit" class="btn btn-danger btn-sm">Видалити</button>
-                    </form>
+                    <div class="d-flex gap-2">
+                        <a th:href="@{/edit/{id}(id=${schedule.id})}" class="btn btn-primary btn-sm">Редагувати</a>
+                        <form th:action="@{/delete/{id}(id=${schedule.id})}" method="post">
+                            <button type="submit" class="btn btn-danger btn-sm">Видалити</button>
+                        </form>
+                    </div>
                 </td>
             </tr>
         </tbody>
